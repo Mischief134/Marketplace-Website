@@ -12,5 +12,5 @@ from django.views import generic
 
 
 def index(request):
-    context = {'val': "HAw you are pidor"}
+    context = {'val': "Nuri you are pidor"}
     return render(request, 'main/index.html', context)
