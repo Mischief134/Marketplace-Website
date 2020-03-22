@@ -19,37 +19,38 @@
 <body>
     <div id="app">
         <b-navbar type="dark" variant="dark">
+            {% block navbar %}
+            <b-navbar-brand href="/">Marketplace</b-navbar-brand>
             <b-navbar-nav>
-                {% block navbar %}
-                <b-nav-item href="/">Home</b-nav-item>
-
-                <!-- Navbar dropdowns -->
-                <b-nav-item-dropdown text="Lang" right>
-                    <b-dropdown-item href="#">EN</b-dropdown-item>
-                    <b-dropdown-item href="#">ES</b-dropdown-item>
-                    <b-dropdown-item href="#">RU</b-dropdown-item>
-                    <b-dropdown-item href="#">FA</b-dropdown-item>
-                </b-nav-item-dropdown>
-
-                <b-nav-item-dropdown text="User" right>
-                    <b-dropdown-item href="#">Account</b-dropdown-item>
-                    <b-dropdown-item href="#">Settings</b-dropdown-item>
-                </b-nav-item-dropdown>
-                {% endblock %}
+                <!-- add more navs here -->
             </b-navbar-nav>
+
+            <b-navbar-nav class="ml-auto">
+                {% if user.is_authenticated %}
+                    <b-nav-item-dropdown text="User" right>
+                        <b-dropdown-item href="#">Account</b-dropdown-item>
+                        <b-dropdown-item href="#">Settings</b-dropdown-item>
+                        <b-dropdown-item href="/user/logout">Logout</b-dropdown-item>
+                    </b-nav-item-dropdown>
+                {% else %}
+                    <b-nav-item href="/user/login">Login</b-nav-item>
+                {% endif %}
+            </b-navbar-nav>
+            {% endblock %}
         </b-navbar>
-        <b-container>
+        <b-container class="py-3">
             {% block content %}{% endblock %}
         </b-container>
     </div>
 </body>
 <script type="text/javascript">
     var app = new Vue({
-      el: '#app',
-      {% block vue %}
-      data: {
-      },
-      {% endblock %}
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        {% block vue %}
+        data: {
+        },
+        {% endblock %}
     });
 </script>
 </html>
