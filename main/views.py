@@ -17,7 +17,7 @@ from auction.models import Product
 
 
 def index(request):
-    latest_product_list = Product.objects.order_by('pub_date')
+    latest_product_list = Product.objects.all()
     # context = {'val': "Nuri you are pidor",'latest_product_list':latest_product_list}
 
     val = serializers.serialize("json", latest_product_list)
