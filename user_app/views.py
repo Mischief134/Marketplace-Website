@@ -1,6 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
+from auction.models import Product
 from .forms import UserRegisterForm
 
 
@@ -19,4 +21,7 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    obj = Product.objects.get_queryset().filter(user_id=request.user.id)
+
+    # product = get_object_or_404(Product, pk=id)
+    return render(request, 'users/profile.html',{'orderhistory':obj})
