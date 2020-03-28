@@ -21,7 +21,6 @@ def register(request):
 
 @login_required
 def profile(request):
-    obj = Product.objects.get_queryset().filter(user_id=request.user.id)
+    obj = Product.objects.get_queryset().filter(orders_id=request.user.id)
 
-    # product = get_object_or_404(Product, pk=id)
     return render(request, 'users/profile.html',{'orderhistory':obj})

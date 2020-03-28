@@ -28,7 +28,7 @@
             <b-navbar-nav class="ml-auto">
                 {% if user.is_authenticated %}
                     <b-nav-item-dropdown text="User" right>
-                        <b-dropdown-item href="#">Account</b-dropdown-item>
+                        <b-dropdown-item href="/user/profile">Account</b-dropdown-item>
                         <b-dropdown-item href="#">Settings</b-dropdown-item>
                         <b-dropdown-item href="/user/logout">Logout</b-dropdown-item>
                     </b-nav-item-dropdown>
