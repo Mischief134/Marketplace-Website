@@ -2,33 +2,151 @@
 
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="content-section">
-      <div class="media">
-        <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-
-
-        <div class="media-body">
-             <h1>ORDER HISTORY</h1>
-
-             {% if orderhistory%}
-              {% for order in orderhistory %}
-                <p>{{order.title}}</p>
-
-              {% endfor %}
-          {%endif%}
-          <h2 class="account-heading">{{ user.username }}</h2>
-          <p class="text-secondary">{{ user.email }}</p>
-        </div>
-      </div>
-
-
-          {% csrf_token %}
-    <form method="get" action="/create/">
-         <button class="btn btn-outline-info" type="submit">Create New Product</button>
-    </form>
-
-
-
-      </form>
-    </div>
+    <b-row align-v="center" class="mb-5">
+        <b-col cols="auto">
+            {% if user.profile.image.url %}
+                <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+            {% else %}
+                <img class="rounded-circle account-img" src="/media/default.png">
+            {% endif %}
+        </b-col>
+        <b-col>
+            <b-row>
+                <b-col>
+                    <h3>{{ user.username }}</h3>
+                </b-col>
+            </b-row>
+            {% if user.email %}
+                <b-row>
+                    <b-col>
+                        <h6 class="text-muted">({{ user.email }})</h6>
+                    </b-col>
+                </b-row>
+            {% endif %}
+            <b-row>
+                <b-col>
+                    <small class="text-muted">Joined on: {{ user.date_joined }}</small>
+                </b-col>
+            </b-row>
+        </b-col>
+    </b-row>
+    <b-tabs v-model="tabIndex" content-class="mt-5">
+        <b-tab>
+            <template v-slot:title>
+                <h5><span class="mdi mdi-clipboard-list mr-2"></span>Order History</h5>
+            </template>
+            {% if orderhistory%}
+                {% for order in orderhistory %}
+                    <p>{{order.title}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">You don't have any order history yet.</p>
+            {% endif %}
+        </b-tab>
+        <b-tab>
+            <template v-slot:title>
+                <h5><span class="mdi mdi-warehouse mr-2"></span>My Warehouse</h5>
+            </template>
+            <b-col>
+                <b-row class="mb-3">
+                    {% if inventory %}
+                        {% for item in inventory %}
+                            <p>{{item.title}}</p>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">You don't have anything to sell yet... Add some by clicking the button below!</p>
+                    {% endif %}
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row>
+                            <b-button @click="createModal = true">Add new listing</b-button>
+                            <b-modal v-model="createModal" title="Add new listing">
+                                <b-form method="post" action="/create/">
+                                    {% csrf_token %}
+                                    <b-form-group
+                                            label="Name:"
+                                            label-for="product-title"
+                                    >
+                                        <b-form-input
+                                                id="product-title"
+                                                v-model="form.title"
+                                                required
+                                                placeholder="Ex. Sweet Awesome Headphones"
+                                        ></b-form-input>
+                                    </b-form-group>
+                                    <b-form-group
+                                            label="Price:"
+                                            label-for="product-price"
+                                    >
+                                        <b-input-group prepend="$">
+                                            <b-form-input
+                                                    id="product-price"
+                                                    v-model="form.price"
+                                                    required type="number" step="0.01"
+                                                    min="0.00" lazy-formatter
+                                                    :formatter="formatPrice"
+                                            ></b-form-input>
+                                        </b-input-group>
+                                    </b-form-group>
+                                    <b-form-group
+                                            label="Product description:"
+                                            label-for="product-description"
+                                    >
+                                        <b-form-textarea
+                                                id="product-description"
+                                                v-model="form.description"
+                                                placeholder="Say something about your product..."
+                                                rows="8"
+                                        ></b-form-textarea>
+                                    </b-form-group>
+                                </b-form>
+                                <template v-slot:modal-footer="{ ok, cancel }">
+                                    <b-button variant="outline-secondary" @click="cancel">
+                                        Cancel
+                                    </b-button>
+                                    <b-button variant="outline-primary" type="submit" @click="validateAndSubmit">
+                                        Submit
+                                    </b-button>
+                                </template>
+                            </b-modal>
+                        </b-row>
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-tab>
+    </b-tabs>
 {% endblock content %}
+
+{% block vue %}
+data: {
+    createModal: false,
+    tabIndex: 0,
+    form: {
+        title: '',
+        price: '0.00',
+        description: '',
+    },
+},
+methods: {
+    validateAndSubmit() {
+        this.form = {
+            title: '',
+            price: '0.00',
+            description: '',
+        };
+        this.createModal = false;
+    },
+    formatPrice(value) {
+        const numStr = String(Math.round(Number(value) * 100) / 100);
+        const parts = numStr.split('.');
+        // Pad the string
+        if (parts.length < 2) {
+            return numStr + '.00';
+        } else if (parts[1].length < 2) {
+            return numStr + '0';
+        }
+        return numStr;
+    }
+}
+{% endblock %}

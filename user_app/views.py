@@ -23,4 +23,4 @@ def register(request):
 def profile(request):
     obj = Product.objects.get_queryset().filter(orders_id=request.user.id)
 
-    return render(request, 'users/profile.html',{'orderhistory':obj})
+    return render(request, 'users/profile.html', {'orderhistory': obj})
