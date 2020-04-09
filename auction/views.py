@@ -20,7 +20,6 @@ def detail(request,id):
     return render(request, 'auction/productdetails.html', {'product': product})
 
 
-
 def create(request):
     if request.method == 'POST':
         form = CreateForm(request.POST)
@@ -31,10 +30,14 @@ def create(request):
             description = form.cleaned_data.get('description')
             price = form.cleaned_data.get('price')
 
-            prod = Product(title=title,description=description,price=price,cart=None,orders=None,listed_items=request.user.id)
+            prod = Product(
+                title=title, description=description, price=price, cart=None, orders=None, listed_items=request.user.id
+            )
             prod.save()
             # messages.success(request, f'Your account has been created! You are now able to log in')
             return redirect('')
+        else:
+            return render(request, 'auction/create.html', {'form': form, 'errors': form.errors})
     else:
         form = CreateForm()
     return render(request, 'auction/create.html', {'form': form})

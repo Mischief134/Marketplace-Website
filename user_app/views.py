@@ -1,3 +1,4 @@
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,7 +21,14 @@ def register(request):
 
 
 @login_required
-def profile(request):
+def profile(request, action=None):
     obj = Product.objects.get_queryset().filter(orders_id=request.user.id)
-
-    return render(request, 'users/profile.html', {'orderhistory': obj})
+    if action is None:
+        return HttpResponseRedirect('/users/profile/orders')
+    elif action == 'orders':
+        tab_index = 0
+    elif action == 'listings':
+        tab_index = 1
+    else:
+        raise Http404('Page does not exist')
+    return render(request, 'users/profile.html', {'tabIndex': tab_index, 'orderhistory': obj})

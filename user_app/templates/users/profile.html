@@ -121,12 +121,18 @@
 {% block vue %}
 data: {
     createModal: false,
-    tabIndex: 0,
+    tabIndex: {{ tabIndex }},
     form: {
         title: '',
         price: '0.00',
         description: '',
     },
+},
+watch: {
+    tabIndex(newVal) {
+        const action = newVal === 1 ? 'listings' : 'orders';
+        window.history.pushState(null, null, `${window.location.origin}/user/profile/${action}`);
+    }
 },
 methods: {
     validateAndSubmit() {
