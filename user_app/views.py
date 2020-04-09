@@ -24,7 +24,7 @@ def register(request):
 def profile(request, action=None):
     obj = Product.objects.get_queryset().filter(orders_id=request.user.id)
     if action is None:
-        return HttpResponseRedirect('/users/profile/orders')
+        return HttpResponseRedirect('/user/profile/orders/')
     elif action == 'orders':
         tab_index = 0
     elif action == 'listings':
