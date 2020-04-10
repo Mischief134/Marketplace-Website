@@ -1,5 +1,3 @@
-{% load crispy_forms_tags %}
-
 Vue.component('add-product', {
     delimiters: ['[[', ']]'],
     template: `

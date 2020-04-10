@@ -32,7 +32,8 @@ def create(request):
             price = form.cleaned_data.get('price')
 
             prod = Product(
-                title=title, description=description, price=price, cart=None, orders=None, listed_items=request.user.id
+                user=request.user,
+                title=title, description=description, price=price, cart=None, orders=None
             )
             prod.save()
 
