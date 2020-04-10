@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    price = models.IntegerField(default=0)
+    price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     description = models.CharField(max_length=200)
     image = models.ImageField(default='default.jpg', upload_to='product_pics')
     # date = models.DateTimeField('date published')
