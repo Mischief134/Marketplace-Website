@@ -12,7 +12,8 @@
     <!-- Load polyfills to support older browsers -->
     <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CArray.from%2CArray.isArray%2CObject.assign%2CObject.is%2CPromise%2CMutationObserver%2CIntersectionObserver"></script>
     <!-- Load Vue followed by BootstrapVue -->
-    <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+    <!--<script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
     <!-- Load the following for BootstrapVueIcons support -->
     <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
@@ -48,6 +49,9 @@
     </div>
 </body>
 <script type="text/javascript">
+    Vue.config.devtools = true;
+    {% block js %}
+    {% endblock %}
     var app = new Vue({
         delimiters: ['[[', ']]'],
         el: '#app',
