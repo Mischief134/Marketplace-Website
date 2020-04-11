@@ -24,17 +24,10 @@ def detail(request, item_id):
 
 def create(request):
     if request.method == 'POST':
-        form = CreateForm(json.loads(request.body))
+        form = CreateForm(request.POST, request.FILES)
         if form.is_valid():
-
-            title = form.cleaned_data.get('title')
-            description = form.cleaned_data.get('description')
-            price = form.cleaned_data.get('price')
-
-            prod = Product(
-                user=request.user,
-                title=title, description=description, price=price, cart=None, orders=None
-            )
+            prod = form.save(commit=False)
+            prod.user = request.user
             prod.save()
 
             return HttpResponse('Item added.')

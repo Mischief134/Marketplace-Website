@@ -48,10 +48,11 @@
         </b-container>
     </div>
 </body>
+
+{% block js %}
+{% endblock %}
 <script type="text/javascript">
     Vue.config.devtools = true;
-    {% block js %}
-    {% endblock %}
     var app = new Vue({
         delimiters: ['[[', ']]'],
         el: '#app',

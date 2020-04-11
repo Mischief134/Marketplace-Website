@@ -1,7 +1,16 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+import time
+import os
 # Create your models here.
+
+
+def product_imagepath(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/product_pics/user_<id>/<generated filename>
+    parts = os.path.splitext(filename)
+    ext = parts[1].lower() if len(parts) > 1 else ''
+    return 'product_pics/user_{0}/{1}'.format(instance.user.id, f"{int(time.time())}{ext}")
 
 
 class Product(models.Model):
@@ -9,7 +18,7 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     description = models.CharField(max_length=200)
-    image = models.ImageField(default='default.jpg', upload_to='product_pics')
+    image = models.ImageField(default='default.jpg', upload_to=product_imagepath)
     # date = models.DateTimeField('date published')
 
     def __str__(self):
