@@ -62,7 +62,7 @@
                             id="product-image"
                             v-model="form.image"
                             :state="imageState"
-                            accept="image/jpeg, image/png, image/gif"
+                            accept="image/*"
                         ></b-form-file>
                         <b-form-invalid-feedback :state="imageState">
                             [[ error.image ]]
