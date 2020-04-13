@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'auction.apps.AuctionConfig',
     'main.apps.MainConfig',
     'user_app.apps.UserAppConfig',
     'django.contrib.admin',
@@ -42,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'auction',
+    'channels',
+    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +129,22 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+
+ASGI_APPLICATION = 'COMP307FinalProject.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+# if DEBUG:
+#     STRIPE_PUBLISHABLE_KEY=''
+#     STRIPE_SECRET_KEY=''
+# else:
+#     STRIPE_PUBLISHABLE_KEY = 'YOUR STRIPE LIVE PUB KEY'
+#     STRIPE_SECRET_KEY = 'YOUR STRIPE LIVE SECRET KEY'

@@ -19,7 +19,10 @@ def detail(request, item_id):
     product = get_object_or_404(Product, pk=item_id)
     # except Question.DoesNotExist:
     #     raise Http404("Question does not exist")
-    return render(request, 'auction/productdetails.html', {'product': product})
+    return render(request, 'auction/productdetails.html', {
+        'product': product,
+        'pid': product.id,
+    })
 
 
 def create(request):
