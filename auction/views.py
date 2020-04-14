@@ -17,11 +17,13 @@ import json
 def detail(request, item_id):
     # try:
     product = get_object_or_404(Product, pk=item_id)
+    username = request.user.username
     # except Question.DoesNotExist:
     #     raise Http404("Question does not exist")
     return render(request, 'auction/productdetails.html', {
         'product': product,
         'pid': product.id,
+        'username': username,
     })
 
 
