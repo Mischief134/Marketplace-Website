@@ -21,7 +21,7 @@ def index(request):
     context = {
         'trending_products': list(map(lambda x: {
             "title": x['title'],
-            "price": x['price'],
+            "price": str(x['price']),
             "description": x['description'],
             "link": f"/auction/{x['id']}"
         }, list(latest_product_list.values())))
