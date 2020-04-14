@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from auction.forms import CreateForm
-from auction.models import Product
+from auction.models import Product, Inventory
 from django.http import JsonResponse, HttpResponse
 import json
 
@@ -31,9 +31,15 @@ def create(request):
     if request.method == 'POST':
         form = CreateForm(request.POST, request.FILES)
         if form.is_valid():
+            # create new product entry
             prod = form.save(commit=False)
             prod.user = request.user
             prod.save()
+
+            # create new inventory entry associated with this product
+            ivt = Inventory()
+            ivt.item = prod
+            ivt.save()
 
             return HttpResponse('Item added.')
         else:

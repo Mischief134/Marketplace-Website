@@ -100,6 +100,7 @@ setup(
         'Pillow',
         'django-crispy-forms',
         'channels',
+        'channels-redis',
         'stripe'
     ],
 

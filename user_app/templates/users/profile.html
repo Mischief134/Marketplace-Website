@@ -48,21 +48,24 @@
             </template>
             <b-col>
                 <b-row class="mb-3">
-                    {% if inventory %}
-                        {% for item in inventory %}
-                            <p>{{item.title}}</p>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted">You don't have anything to sell yet... Add some by clicking the button below!</p>
-                    {% endif %}
-                </b-row>
-                <b-row>
                     <b-col>
                         <b-row>
                             <b-button @click="createModal = true">Add new listing</b-button>
                             <add-product v-model="createModal" />
                         </b-row>
                     </b-col>
+                </b-row>
+                <b-row>
+                    {% if products %}
+                        {% for item in products %}
+                            <b-col>
+                                <p>{{ item.title }}</p>
+                                <p>Stock left: {{ item.inventory.stock_count }}</p>
+                            </b-col>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">You don't have anything to sell yet... Add some by clicking the button below!</p>
+                    {% endif %}
                 </b-row>
             </b-col>
         </b-tab>
