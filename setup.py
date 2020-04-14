@@ -98,7 +98,9 @@ setup(
     install_requires=[
         'Django',
         'Pillow',
-        'django-crispy-forms'
+        'django-crispy-forms',
+        'channels',
+        'stripe'
     ],
 
     # List additional groups of dependencies here (e.g. development
