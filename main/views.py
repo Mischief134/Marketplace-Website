@@ -21,9 +21,10 @@ def index(request):
     context = {
         'trending_products': list(map(lambda x: {
             "title": x['title'],
-            "price": str(x['price']),
+            "price": x['price'],
             "description": x['description'],
-            "link": f"/auction/{x['id']}"
+            "link": f"/auction/{x['id']}",
+            "image": x['image'],
         }, list(latest_product_list.values())))
     }
     return render(request, 'main/index.html', context)
