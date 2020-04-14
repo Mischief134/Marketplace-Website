@@ -23,7 +23,8 @@ def index(request):
             "title": x['title'],
             "price": x['price'],
             "description": x['description'],
-            "link": f"/auction/{x['id']}"
+            "link": f"/auction/{x['id']}",
+            "image": x['image'],
         }, list(latest_product_list.values())))
     }
     return render(request, 'main/index.html', context)

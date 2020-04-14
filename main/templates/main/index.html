@@ -1,61 +1,53 @@
 {% extends "main/base.html" %}
-{%load static%}
+{% load static %}
 {% block content %}
     <b-row class="pt-2 mb-2 mx-0">
         <h2>Trending</h2>
     </b-row>
     <b-row class="mb-5">
-        <b-col
-           v-for="(item, i) in trending" :key="i"
-           cols="6" md="5" lg="3"
-        >
+        {% for item in trending_products %}
+        <b-col cols="6" md="5" lg="3">
             <b-card
-                :title="item.title"
-                :sub-title="`$ ${item.price}`"
-                img-src="https://picsum.photos/600/300/?image=25"
+                title="{{ item.title }}"
+                sub-title="$ {{ item.price }}"
+                img-src="{% static item.image %}"
                 img-alt="Image"
                 style="max-width: 20rem;"
-              >
+            >
                 <b-card-text>
-                  [[ item.description ]]
+                  {{ item.description }}
                 </b-card-text>
 
-                <b-button :href="item.link" variant="primary">
+                <b-button href="{{ item.link }}" variant="primary">
                     Check it out
                 </b-button>
-              </b-card>
+            </b-card>
         </b-col>
+        {% endfor %}
     </b-row>
 
     <b-row class="mb-2 mx-0">
         <h3>Items you viewed</h3>
     </b-row>
     <b-row>
-        <b-col
-           v-for="(item, i) in trending" :key="i"
-           cols="6" md="5" lg="3"
-        >
+        {% for item in trending_products %}
+        <b-col cols="6" md="5" lg="3">
             <b-card
-                :title="item.title"
-                :sub-title="`$ ${item.price}`"
-                img-src="https://picsum.photos/600/300/?image=25"
+                title="{{ item.title }}"
+                sub-title="$ {{ item.price }}"
+                img-src="{% static item.image %}"
                 img-alt="Image"
                 style="max-width: 20rem;"
-              >
+            >
                 <b-card-text>
-                  [[ item.description ]]
+                  {{ item.description }}
                 </b-card-text>
 
-                <b-button :href="item.link" variant="primary">
+                <b-button href="{{ item.link }}" variant="primary">
                     Check it out
                 </b-button>
-              </b-card>
+            </b-card>
         </b-col>
+        {% endfor %}
     </b-row>
-{% endblock %}
-
-{% block vue %}
-data: {
-    trending: {{trending_products|safe}}
-}
 {% endblock %}
