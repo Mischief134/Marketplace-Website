@@ -32,7 +32,7 @@
 
             <b-navbar-nav class="ml-auto">
                 {% if user.is_authenticated %}
-                    <b-nav-item-dropdown text="User" right>
+                    <b-nav-item-dropdown text="{{ user.username }}" right>
                         <b-dropdown-item href="/user/profile">Account</b-dropdown-item>
                         <b-dropdown-item href="#">Settings</b-dropdown-item>
                         <b-dropdown-item href="/user/logout">Logout</b-dropdown-item>
@@ -43,7 +43,7 @@
             </b-navbar-nav>
             {% endblock %}
         </b-navbar>
-        <b-container class="mt-3">
+        <b-container class="mt-3 mb-5">
             {% block content %}{% endblock %}
         </b-container>
     </div>

@@ -2,3 +2,8 @@
     width: 100px;
     height: auto;
 }
+
+.product-card .card-img {
+    height: 50%;
+    object-fit: cover;
+}

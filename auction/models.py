@@ -18,7 +18,7 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     description = models.CharField(max_length=200)
-    image = models.ImageField(default='default.jpg', upload_to=product_imagepath)
+    image = models.ImageField(default='default_product_pic.png', upload_to=product_imagepath)
     # date = models.DateTimeField('date published')
 
     def __str__(self):
@@ -53,7 +53,6 @@ class Order(models.Model):
 class Inventory(models.Model):
     item = models.OneToOneField(Product, on_delete=models.CASCADE)
     stock_count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    sold_count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return str(self.item) + " Inventory"

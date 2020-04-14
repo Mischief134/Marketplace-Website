@@ -11,8 +11,9 @@
                 title="{{ item.title }}"
                 sub-title="$ {{ item.price }}"
                 img-src="{% static item.image %}"
-                img-alt="Image"
+                img-alt="{{ item.title }}-img"
                 style="max-width: 20rem;"
+                class="h-100 product-card"
             >
                 <b-card-text>
                   {{ item.description }}
@@ -36,8 +37,9 @@
                 title="{{ item.title }}"
                 sub-title="$ {{ item.price }}"
                 img-src="{% static item.image %}"
-                img-alt="Image"
+                img-alt="{{ item.title }}-img"
                 style="max-width: 20rem;"
+                class="h-100 product-card"
             >
                 <b-card-text>
                   {{ item.description }}
