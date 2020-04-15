@@ -20,7 +20,6 @@ class Product(models.Model):
     description = models.CharField(max_length=200)
     image = models.ImageField(default='product_pics/default_product_pic.png', upload_to=product_imagepath)
     created_at = models.DateTimeField()
-    quantity = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title

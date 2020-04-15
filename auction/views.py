@@ -1,10 +1,15 @@
+import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
-from auction.forms import CreateForm
-from auction.models import Product, Inventory, Cart
+from django.urls import reverse
+from django.utils import timezone
+
+from auction.forms import CreateForm, CreateCart
+from auction.models import Product, Inventory, Cart, Order
 from user_app.models import User
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 import json
 
 #
@@ -32,7 +37,11 @@ def detail(request, item_id):
         'username': request.user.username,
     })
 
-
+def restock(request,item_id, amount):
+    product = get_object_or_404(Inventory, item_id=int(item_id))
+    product.stock_count += amount
+    product.save()
+    return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
 def create(request):
     if request.method == 'POST':
         form = CreateForm(request.POST, request.FILES)
@@ -53,29 +62,104 @@ def create(request):
             response.status_code = 400
             return response
 
-def add_prod_to_cart(request):
-    if request.method == 'POST':
+
+
+
+def add_prod_to_order(request,item_id):
+    try:
+        orders = Order.objects.get(user_id=request.user.id)
+        product = get_object_or_404(Inventory, item_id=int(item_id))
+        product.stock_count -= 1
+        product.save()
+
+
+
+        iden = str(item_id)
+        if orders.items == "":
+            dict = {}
+            new_val = 1
+        else:
+            dict = json.loads(orders.items)
+            new_val = dict[iden] + 1
+
+        dict[iden] = new_val
+
+        orders.items = json.dumps(dict)
+        orders.save()
+        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+
+
+    except Cart.DoesNotExist:
+
+        orders = Order.objects.create(user_id=request.user.id, items="",shipping_address="",time_placed = timezone.now())
+        product = get_object_or_404(Inventory, item_id=int(item_id))
+        product.stock_count -= 1
+        product.save()
+        # print("GOTVEREN")
+        # print(cart.items)
+
+        iden = str(item_id)
+        if orders.items == "":
+            dict = {}
+            new_val = 1
+        else:
+            dict = json.loads(orders.items)
+            new_val = dict[iden] + 1
+
+        dict[iden] = new_val
+
+        orders.items = json.dumps(dict)
+        orders.save()
+        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+
+
+def add_prod_to_cart(request, item_id):
         try:
             cart = Cart.objects.get(user_id=request.user.id)
+            product = get_object_or_404(Inventory, item_id=int(item_id))
+            product.stock_count -= 1
+            product.save()
+            print("GOTVEREN")
+            # print(cart.items)
 
-            prod_id = request.POST.get('prod_id')
-            product = get_object_or_404(Product, pk=prod_id)
-            quan = product.quantity
 
-            dict= json.loads(cart.items)
-            dict[prod_id]= quan
+            iden = str(item_id)
+            if cart.items =="":
+                dict = {}
+                new_val = 1
+            else:
+                dict = json.loads(cart.items)
+                new_val = dict[iden] + 1
+
+
+
+            dict[iden]= new_val
 
             cart.items =json.dumps(dict)
+            cart.save()
+            return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
 
 
         except Cart.DoesNotExist:
-            cart = Cart(request.user.id)
-            cart.save()
-            prod_id = request.POST.get('prod_id')
-            product = get_object_or_404(Product, pk=prod_id)
-            quan = product.quantity
 
-            dict = json.loads(cart.items)
-            dict[prod_id] = quan
+
+            cart = Cart.objects.create(user_id = request.user.id,items="")
+            product = get_object_or_404(Inventory, item_id=int(item_id))
+            product.stock_count -= 1
+            product.save()
+
+
+            iden = str(item_id)
+            if cart.items == "":
+                dict = {}
+                new_val = 1
+            else:
+                dict = json.loads(cart.items)
+                new_val = dict[iden] + 1
+
+            dict[iden] = new_val
 
             cart.items = json.dumps(dict)
+            cart.save()
+            return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+
