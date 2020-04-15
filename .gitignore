@@ -125,3 +125,7 @@ dmypy.json
 
 *.DS_Store
 .idea/*
+
+# media files
+media/product_pics/**/*
+!media/product_pics/default_product_pic.png

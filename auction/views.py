@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from auction.forms import CreateForm
-from auction.models import Product, Inventory
+from auction.models import Product, Inventory, Cart
 from user_app.models import User
 from django.http import JsonResponse, HttpResponse
 import json
@@ -52,3 +52,30 @@ def create(request):
             response = JsonResponse({'errors': form.errors})
             response.status_code = 400
             return response
+
+def add_prod_to_cart(request):
+    if request.method == 'POST':
+        try:
+            cart = Cart.objects.get(user_id=request.user.id)
+
+            prod_id = request.POST.get('prod_id')
+            product = get_object_or_404(Product, pk=prod_id)
+            quan = product.quantity
+
+            dict= json.loads(cart.items)
+            dict[prod_id]= quan
+
+            cart.items =json.dumps(dict)
+
+
+        except Cart.DoesNotExist:
+            cart = Cart(request.user.id)
+            cart.save()
+            prod_id = request.POST.get('prod_id')
+            product = get_object_or_404(Product, pk=prod_id)
+            quan = product.quantity
+
+            dict = json.loads(cart.items)
+            dict[prod_id] = quan
+
+            cart.items = json.dumps(dict)
