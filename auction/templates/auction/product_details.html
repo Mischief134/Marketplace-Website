@@ -1,0 +1,97 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block header %}
+    <style type="text/css">
+        .product-image-container {
+            border: 1px solid #d1d1d1;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <b-row align-h="center" class="mb-5">
+        <b-col class="product-image-container" cols="auto">
+            <b-img src="{{ product.image.url }}" fluid alt="{{ product.title }}-img"></b-img>
+        </b-col>
+    </b-row>
+    <b-row class="mt-2 mb-4">
+        <b-col>
+            <h1>{{ product.title }}</h1>
+            <span class="font-weight-bold text-muted">${{product.price}}</span>
+            <p class="mt-3">{{product.description}}</p>
+        </b-col>
+        <b-col cols="auto">
+            <b-row class="mb-4">
+                <b-col>
+                    <b-row align-h="center" class="mb-3">
+                        <b-avatar variant="info" src="{{ seller.image.url }}" size="8rem"></b-avatar>
+                    </b-row>
+                    <b-row align-h="center">
+                        <p class="text-muted">Seller: {{ seller.username }}</p>
+                    </b-row>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-row align-h="center" class="mb-2">
+                        <b-button
+                            {% if stock_count > 1 %} variant="primary" {% endif %}
+                            {% if stock_count < 1 %} disabled {% endif %}
+                        >
+                            <span class="mdi mdi-cart mr-2"></span> Add to Cart
+                        </b-button>
+                    </b-row>
+                    <b-row align-h="center">
+                        <p class="text-muted">Stock left: {{ stock_count }}</p>
+                    </b-row>
+                </b-col>
+            </b-row>
+        </b-col>
+    </b-row>
+
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+    <input id="chat-message-input" type="text" size="100"><br>
+    <input id="chat-message-submit" type="button" value="Send">
+    {{ pid|json_script:"pid" }}
+{% endblock %}
+
+{% block js %}
+    <script>
+        const pid = JSON.parse(document.getElementById('pid').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/auction/'
+            + pid
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+{% endblock %}

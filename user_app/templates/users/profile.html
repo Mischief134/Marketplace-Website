@@ -48,21 +48,19 @@
             </template>
             <b-col>
                 <b-row class="mb-3">
-                    {% if inventory %}
-                        {% for item in inventory %}
-                            <p>{{item.title}}</p>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted">You don't have anything to sell yet... Add some by clicking the button below!</p>
-                    {% endif %}
-                </b-row>
-                <b-row>
                     <b-col>
                         <b-row>
                             <b-button @click="createModal = true">Add new listing</b-button>
                             <add-product v-model="createModal" />
                         </b-row>
                     </b-col>
+                </b-row>
+                <b-row>
+                    {% if inventory %}
+                        <b-table hover :items="inventory" />
+                    {% else %}
+                        <p class="text-muted">You don't have anything to sell yet... Add some by clicking the button below!</p>
+                    {% endif %}
                 </b-row>
             </b-col>
         </b-tab>
@@ -77,6 +75,7 @@
 data: {
     createModal: false,
     tabIndex: {{ tabIndex }},
+    inventory: {{inventory|safe}}
 },
 watch: {
     tabIndex(newVal) {

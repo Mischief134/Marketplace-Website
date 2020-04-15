@@ -2,3 +2,19 @@
     width: 100px;
     height: auto;
 }
+
+.product-card .card-img {
+    height: 40%;
+    object-fit: cover;
+}
+.product-card .card-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-bottom: 5px;
+}
+.product-card .card-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

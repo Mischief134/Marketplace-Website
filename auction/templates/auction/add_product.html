@@ -158,8 +158,7 @@
                 formData.append('image', this.form.image);
 
                 axios.post('/auction/create/', formData).then(() => {
-                    this.createModal = false;
-                    this.initialize();
+                    window.location.reload();
                 }).catch((err) => {
                     if (err.response.data.hasOwnProperty('errors')) {
                         const msg = err.response.data.errors;

@@ -1,5 +1,4 @@
 {% extends "main/base.html" %}
-{% load static %}
 {% block content %}
     <b-row class="pt-2 mb-2 mx-0">
         <h2>Trending</h2>
@@ -10,9 +9,10 @@
             <b-card
                 title="{{ item.title }}"
                 sub-title="$ {{ item.price }}"
-                img-src="{% static item.image %}"
-                img-alt="Image"
+                img-src="{{ item.image }}"
+                img-alt="{{ item.title }}-img"
                 style="max-width: 20rem;"
+                class="h-100 product-card"
             >
                 <b-card-text>
                   {{ item.description }}
@@ -35,9 +35,10 @@
             <b-card
                 title="{{ item.title }}"
                 sub-title="$ {{ item.price }}"
-                img-src="{% static item.image %}"
-                img-alt="Image"
+                img-src="{{ item.image }}"
+                img-alt="{{ item.title }}-img"
                 style="max-width: 20rem;"
+                class="h-100 product-card"
             >
                 <b-card-text>
                   {{ item.description }}
