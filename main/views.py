@@ -20,12 +20,12 @@ def index(request):
     # ! Important: Use {{ ... |safe}} to prevent character escape in the template
     context = {
         'trending_products': list(map(lambda x: {
-            "title": x['title'],
-            "price": x['price'],
-            "description": x['description'],
-            "link": f"/auction/{x['id']}",
-            "image": x['image'],
-        }, list(latest_product_list.values())))
+            "title": x.title,
+            "price": x.price,
+            "description": x.description,
+            "link": f"/auction/{x.id}",
+            "image": x.image.url,
+        }, latest_product_list))
     }
     return render(request, 'main/index.html', context)
 

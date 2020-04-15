@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 # Create your views here.
 from auction.forms import CreateForm
 from auction.models import Product, Inventory
+from user_app.models import User
 from django.http import JsonResponse, HttpResponse
 import json
 
@@ -17,13 +18,18 @@ import json
 def detail(request, item_id):
     # try:
     product = get_object_or_404(Product, pk=item_id)
-    username = request.user.username
+    ivt = Inventory.objects.filter(item=product).values('stock_count')
+    stock_count = ivt[0].get('stock_count') if len(ivt) > 0 else None
+    seller = User.objects.filter(pk=product.user.id)
+
     # except Question.DoesNotExist:
     #     raise Http404("Question does not exist")
-    return render(request, 'auction/productdetails.html', {
+    return render(request, 'auction/product_details.html', {
         'product': product,
+        'stock_count': stock_count,
+        'seller': seller[0],
         'pid': product.id,
-        'username': username,
+        'username': request.user.username,
     })
 
 
