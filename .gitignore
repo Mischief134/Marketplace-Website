@@ -129,3 +129,7 @@ dmypy.json
 # media files
 media/product_pics/**/*
 !media/product_pics/default_product_pic.png
+!media/product_pics/user_1/*
+!media/product_pics/user_2/*
+!media/product_pics/user_3/*
+media/profile_pics/**/*

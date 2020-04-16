@@ -1,18 +1,17 @@
 {% extends "main/base.html" %}
 {% block content %}
-    <b-row class="pt-2 mb-2 mx-0">
-        <h2>Trending</h2>
+    <b-row class="mb-2 mx-0">
+        <h3>New</h3>
     </b-row>
     <b-row class="mb-5">
-        {% for item in trending_products %}
-        <b-col cols="6" md="5" lg="3">
+        {% for item in latest_products %}
+        <b-col cols="6" md="4" lg="3" class="mb-3">
             <b-card
                 title="{{ item.title }}"
                 sub-title="$ {{ item.price }}"
                 img-src="{{ item.image }}"
                 img-alt="{{ item.title }}-img"
-                style="max-width: 20rem;"
-                class="h-100 product-card"
+                class="product-card latest"
             >
                 <b-card-text>
                   {{ item.description }}
@@ -21,24 +20,26 @@
                 <b-button href="{{ item.link }}" variant="primary">
                     Check it out
                 </b-button>
+
+                <template v-slot:footer>
+                    <small class="text-muted">Added on {{ item.created_at }}</small>
+                </template>
             </b-card>
         </b-col>
         {% endfor %}
     </b-row>
-
-    <b-row class="mb-2 mx-0">
-        <h3>Items you viewed</h3>
+    <b-row class="pt-2 mb-2 mx-0">
+        <h2>Trending</h2>
     </b-row>
-    <b-row>
+    <b-row class="mb-5" align-v="start">
         {% for item in trending_products %}
-        <b-col cols="6" md="5" lg="3">
+        <b-col cols="6" md="4" lg="3" class="mb-3 h-100">
             <b-card
                 title="{{ item.title }}"
                 sub-title="$ {{ item.price }}"
                 img-src="{{ item.image }}"
                 img-alt="{{ item.title }}-img"
-                style="max-width: 20rem;"
-                class="h-100 product-card"
+                class="product-card"
             >
                 <b-card-text>
                   {{ item.description }}
