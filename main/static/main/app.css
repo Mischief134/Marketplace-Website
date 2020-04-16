@@ -35,3 +35,10 @@ p {
 .product-card:hover .card-img {
     transform: scale(1.1);
 }
+
+.product-card.latest {
+    height: 28rem;
+}
+.product-card.latest .card-img {
+    height: 50%;
+}
