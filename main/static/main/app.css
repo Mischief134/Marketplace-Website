@@ -1,3 +1,7 @@
+p {
+    white-space: pre-line;
+}
+
 .account-img {
     width: 100px;
     height: auto;
@@ -6,10 +10,13 @@
 .product-card {
     height: 25rem;
     max-width: 20rem;
+    overflow: hidden;
 }
 .product-card .card-img {
     height: 55%;
     object-fit: cover;
+    transition: transform .5s;
+    transform-origin: bottom center;
 }
 .product-card .card-title {
     text-overflow: ellipsis;
@@ -24,4 +31,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+.product-card:hover .card-img {
+    transform: scale(1.1);
 }
