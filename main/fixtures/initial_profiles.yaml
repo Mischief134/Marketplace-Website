@@ -1,0 +1,15 @@
+- model: user_app.profile
+  pk: 1
+  fields:
+    user: 1
+    shipping_address: "496 Glenwood Avenue\nCleveland, OH 44115"
+- model: user_app.profile
+  pk: 2
+  fields:
+    user: 2
+    shipping_address: "321 Ella Street\nBrisbane, CA 94005"
+- model: user_app.profile
+  pk: 3
+  fields:
+    user: 3
+    shipping_address: "2411 Fallon Drive\nWingham, ON N0G 2W0"

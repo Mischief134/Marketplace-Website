@@ -101,7 +101,8 @@ setup(
         'django-crispy-forms',
         'channels',
         'channels-redis',
-        'stripe'
+        'stripe',
+        'PyYAML',
     ],
 
     # List additional groups of dependencies here (e.g. development

@@ -19,8 +19,7 @@ class Product(models.Model):
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     description = models.CharField(max_length=200)
     image = models.ImageField(default='product_pics/default_product_pic.png', upload_to=product_imagepath)
-    created_at = models.DateTimeField()
-    quantity = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
