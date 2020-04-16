@@ -1,0 +1,159 @@
+- model: auction.product
+  pk: 1
+  fields:
+    user: 1
+    title: 32GB USB Flash Drive
+    price: 14.99
+    description: 32GB USB flash drive, supports USB 3.0
+    image: product_pics/user_1/flash.jpg
+    created_at: 2020-03-29 10:26:23.473031
+- model: auction.product
+  pk: 2
+  fields:
+    user: 1
+    title: 16GB USB Flash Drive
+    price: 10.99
+    description: 16GB USB flash drive, with support up to USB 2.0
+    image: product_pics/user_1/flash2.0.png
+    created_at: 2020-03-29 13:30:00.000000
+- model: auction.product
+  pk: 3
+  fields:
+    user: 1
+    title: 30 ft. Ethernet Cable
+    price: 13.99
+    description: "Connector Type - Patch Cord RJ45, RJ45\n
+      Boot Type - Data cable Flexboot, Flexboot\n
+      Shielded - No\n
+      Length - Patch Cord 30 ft.\n
+      Jacket Color - Yellow/Blue\n
+      Cable Shape - Round\n
+      Conductor Size - Data Cable 24 AWG\n
+      Jacket Material - Wire and Cable PVC\n
+      Fire Rating - Data Cable Commercial\n
+      NEC Article and Type - 800 CMG\n
+      Transmission Speed - 1 Gbps\n
+      Temp. Range - -40 Degrees to 167 Degrees F"
+    image: product_pics/user_1/ethernet30ft.jpg
+    created_at: 2020-03-25 10:30:00.000000
+- model: auction.product
+  pk: 4
+  fields:
+    user: 1
+    title: Stereo Headset with Crystal Clear Sound
+    price: 39.99
+    description: "Adjustable Headband - Yes\n
+      Headphones Technology - Dynamic\n
+      Connectivity Technology - Wired\n
+      Connectivity Interfaces - 3.5 mm jack\n
+      Sound Output Mode - Stereo\n
+      Frequency Response - 20 - 20000 hertz\n
+      Diaphragm Diameter - 1.2 inch\n
+      In-Cord Volume Control - Yes\n
+      Controls - Mute, Volume\n
+      Microphone Mounting Type - Boom\n
+      Microphone Operation Mode - Uni-directional\n
+      Active Noise Canceling - Yes\n
+      Sensitivity - -42\n
+      Frequency Response - 100 - 16000 hertz\n
+      Service & Support - 1-year warranty"
+    image: product_pics/user_1/headphone1.jpg
+    created_at: 2020-04-01 09:00:00.000000
+- model: auction.product
+  pk: 5
+  fields:
+    user: 2
+    title: Murder on the Orient Express
+    price: 14.99
+    description: "THE MOST WIDELY READ MYSTERY OF ALL TIME--NOW A MAJOR MOTION PICTURE DIRECTED BY KENNETH BRANAGH AND
+    PRODUCED BY RIDLEY SCOTT \"The murderer is with us--on the train now . . .\"Just after midnight, the famous Orient
+    Express is stopped in its tracks by a snowdrift. By morning, the millionaire Samuel Edward Ratchett lies dead in
+    his compartment, stabbed a dozen times, his door locked from the inside. Without a shred of doubt, one of his
+    fellow passengers is the murderer.Isolated by the storm, detective Hercule Poirot must find the killer among a
+    dozen of the dead man's enemies, before the murderer decides to strike again.\"What more . . . can a mystery addict
+    desire?\"-- New York Times
+
+    Author: Agatha Christie"
+    image: product_pics/user_2/book1.jpg
+    created_at: 2020-04-10 15:15:00.000000
+- model: auction.product
+  pk: 6
+  fields:
+    user: 2
+    title: Sherlock Holmes - The Complete Novels and Stories, Vol. 1
+    price: 16.99
+    description: Sherlock Holmes - The Complete Novels and Stories, Vol. 1 by Sir Arthur Conan Doyle
+    image: product_pics/user_2/book2.jpg
+    created_at: 2020-04-15 13:45:26.000000
+- model: auction.product
+  pk: 7
+  fields:
+    user: 2
+    title: Sherlock Holmes - The Complete Novels and Stories, Vol. 2
+    price: 18.99
+    description: Sherlock Holmes - The Complete Novels and Stories, Vol. 2 by Sir Arthur Conan Doyle
+    image: product_pics/user_2/book3.jpg
+    created_at: 2020-04-03 10:12:24.000000
+- model: auction.product
+  pk: 8
+  fields:
+    user: 3
+    title: Everyday Math for Dummies
+    price: 10.99
+    description: "After you graduated from high school, college, or even graduate school you might have vowed never to
+    deal with math again, right? But everyday, you're faced with some form of math, from balancing your checkbook to
+    tipping your server at a restaurant. Well, there's no reason to be intimidated when it comes to math, and this book
+    will show you why. Everyday Math for Dummies is intended to be a quick, enjoyable adult-oriented course in the
+    aspects of math you need all the time. Whether you're looking for a refresher on math skills you might have
+    forgotten or want to obtain math skills you never fully understood, Everyday Math For Dummies can help you discover
+    the answers to all kinds of problems. Everyday Math For Dummies helps build your skills so that you can better deal
+    with all sorts of stressful math situations, from refinancing your house to evaluating business news and
+    understanding sports statistics. There's even a fun chapter on puzzles With this book as your guide, you'll be able
+    to: Finally make sense of your checkbook Master the simplest tipping rules in the world Calculate compound interest
+    like an investment pro Understand the math of refinancing and debt management Decipher the fine print in a credit
+    card agreement Figure percentages easily with a calculator, on paper, or in your head Get a handle on all that
+    stuff from high school--algebra, geometry, and trig Everyday Math For Dummies can help you take charge of your
+    life. Complete with a tear-out cheat sheet for you to keep handy for when the kids need help with their homework or
+    you need help completing your tax return, this book makes math easy."
+    image: product_pics/user_3/book1.jpg
+    created_at: 2020-04-08 09:10:25.000000
+- model: auction.product
+  pk: 9
+  fields:
+    user: 3
+    title: Investing for Dummies
+    price: 11.99
+    description: "Investing For Dummies, 7th Edition (9781118884928) is now being published as Investing For Dummies,
+    7th Edition (9781119293347). While this version features an older Dummies cover and design, the content is the same
+    as the new release and should not be considered a different product. Invest in your financial future with this
+    valuable, popular, and easy-to-use guide This latest edition of Investing For Dummies is infused with new and
+    updated material to help you ramp up your portfolio today This includes time-tested advice, updates to investing
+    recommendations, and strategies that reflect changing market conditions. Investing may be an intimidating prospect,
+    but this resource will serve as your primer on all aspects of the topic, including how to develop and manage a
+    portfolio, invest in stocks, bonds, mutual funds, and real estate, open a small business, and understand the
+    critical tax implications of your investing decisions. Updates have been made to sections on investing resources,
+    health insurance, retirement planning, and investment options, among others. Investing For Dummies, 7th Edition
+    will help ease you into investing confidently. Dive into the new content to get sage advice regardless of where you
+    are in your investment planning stage--beginning to develop plans, investing through a company 401(k), or seeking
+    to shore up your nest egg prior to retirement, this book covers it all. Addresses all aspects of investing,
+    including how to develop and manage a portfolio that includes various investment instruments Features expanded and
+    updated coverage on investing resources, retirement planning, tax laws, investment options, and real estate Offers
+    time-tested advice and strategies from Eric Tyson, a nationally-recognized personal finance counselor and
+    bestselling author If you're looking to get sound guidance and trusted investment strategies, Investing For Dummies
+    sets you up to take control of your investment options."
+    image: product_pics/user_3/book2.jpg
+    created_at: 2020-03-30 18:40:00.000000
+- model: auction.product
+  pk: 10
+  fields:
+    user: 3
+    title: Calculus for Dummies
+    price: 9.99
+    description: "Each year, one million high school and college students struggle through calculus, the single
+    toughest maths class that most people will ever take. With easy-to-understand explanations, memorable examples,
+    and helpful shortcuts, math teacher Mark Ryan takes the mystery out of calculus concepts and problems - everything
+    from limits, derivatives, and integration to word problems, integral theorems, and conic sections. He grounds
+    calculus in the real world, showing why it's a key problem-solving tool in most scientific and technical fields.
+    Complete with handy reference tables and formulas, this is a classroom companion for calculus students everywhere."
+    image: product_pics/user_3/book3.jpg
+    created_at: 2020-04-01 09:00:00.000000

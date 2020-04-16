@@ -3,8 +3,12 @@
     height: auto;
 }
 
+.product-card {
+    height: 25rem;
+    max-width: 20rem;
+}
 .product-card .card-img {
-    height: 40%;
+    height: 55%;
     object-fit: cover;
 }
 .product-card .card-title {
@@ -12,6 +16,9 @@
     overflow: hidden;
     white-space: nowrap;
     padding-bottom: 5px;
+}
+.product-card .card-subtitle {
+    color: #30bf48 !important;
 }
 .product-card .card-text {
     text-overflow: ellipsis;
