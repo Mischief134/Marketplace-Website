@@ -38,10 +38,16 @@ def detail(request, item_id):
     })
 
 def restock(request,item_id, amount):
+
     product = get_object_or_404(Inventory, item_id=int(item_id))
-    product.stock_count += amount
-    product.save()
-    return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+    if product.user.id == request.user.id :
+        product.stock_count += amount
+        product.save()
+        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+
+    else:
+        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+
 def create(request):
     if request.method == 'POST':
         form = CreateForm(request.POST, request.FILES)
@@ -62,89 +68,55 @@ def create(request):
             response.status_code = 400
             return response
 
-
-
+def edit_order(request,item_id):
+    product = get_object_or_404(Product, item_id=int(item_id))
+    if request.method == 'POST':
+        product.title = request.POST['title']
+        product.price= int(request.POST['price'])
+        product.description= (request.POST['description'])
+        product.image = request.POST['image']
+        return redirect(request.META['HTTP_REFERER'])
+        # return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
 
 def add_prod_to_order(request,item_id):
     try:
         orders = Order.objects.get(user_id=request.user.id)
         product = get_object_or_404(Inventory, item_id=int(item_id))
-        product.stock_count -= 1
-        product.save()
 
 
+        if product.stock_count > 0:
+            product.stock_count -= 1
+            product.save()
 
-        iden = str(item_id)
-        if orders.items == "":
-            dict = {}
-            new_val = 1
+            iden = str(item_id)
+            if orders.items == "":
+                dict = {}
+                dict[iden] = 0
+            else:
+                dict = json.loads(orders.items)
+                dict[iden] = 0
+
+            dict[iden] += 1
+
+            # dict[iden]= new_val
+
+            orders.items = json.dumps(dict)
+            orders.save()
+            return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
         else:
-            dict = json.loads(orders.items)
-            new_val = dict[iden] + 1
-
-        dict[iden] = new_val
-
-        orders.items = json.dumps(dict)
-        orders.save()
-        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+            return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+            # return redirect(request.META['HTTP_REFERER'])
 
 
-    except Cart.DoesNotExist:
+    except Order.DoesNotExist:
 
         orders = Order.objects.create(user_id=request.user.id, items="",shipping_address="",time_placed = timezone.now())
         product = get_object_or_404(Inventory, item_id=int(item_id))
-        product.stock_count -= 1
-        product.save()
+
         # print("GOTVEREN")
         # print(cart.items)
 
-        iden = str(item_id)
-        if orders.items == "":
-            dict = {}
-            new_val = 1
-        else:
-            dict = json.loads(orders.items)
-            new_val = dict[iden] + 1
-
-        dict[iden] = new_val
-
-        orders.items = json.dumps(dict)
-        orders.save()
-        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
-
-
-def add_prod_to_cart(request, item_id):
-        try:
-            cart = Cart.objects.get(user_id=request.user.id)
-            product = get_object_or_404(Inventory, item_id=int(item_id))
-            product.stock_count -= 1
-            product.save()
-            print("GOTVEREN")
-            # print(cart.items)
-
-
-            iden = str(item_id)
-            if cart.items =="":
-                dict = {}
-                new_val = 1
-            else:
-                dict = json.loads(cart.items)
-                new_val = dict[iden] + 1
-
-
-
-            dict[iden]= new_val
-
-            cart.items =json.dumps(dict)
-            cart.save()
-            return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
-
-
-        except Cart.DoesNotExist:
-
-
-            cart = Cart.objects.create(user_id = request.user.id,items="")
-            product = get_object_or_404(Inventory, item_id=int(item_id))
+        if product.stock_count > 0:
             product.stock_count -= 1
             product.save()
 
@@ -152,14 +124,86 @@ def add_prod_to_cart(request, item_id):
             iden = str(item_id)
             if cart.items == "":
                 dict = {}
-                new_val = 1
+                dict[iden] = 0
             else:
                 dict = json.loads(cart.items)
-                new_val = dict[iden] + 1
+                dict[iden] = 0
 
-            dict[iden] = new_val
+            dict[iden] += 1
+
+            # dict[iden]= new_val
 
             cart.items = json.dumps(dict)
             cart.save()
             return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+        else:
+            return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+            # return redirect(request.META['HTTP_REFERER'])
+
+
+def add_prod_to_cart(request, item_id):
+
+        try:
+            cart = Cart.objects.get(user_id=request.user.id)
+            product = get_object_or_404(Inventory, item_id=int(item_id))
+            if product.stock_count >0:
+
+
+
+
+                iden = str(item_id)
+                if cart.items =="":
+                    dict = {}
+                    dict[iden] = 0
+                else:
+                    dict = json.loads(cart.items)
+                    dict[iden] = 0
+
+                dict[iden] += 1
+
+
+                # dict[iden]= new_val
+
+                cart.items =json.dumps(dict)
+                cart.save()
+                return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+            else:
+                return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+                # return redirect(request.META['HTTP_REFERER'])
+
+
+        except Cart.DoesNotExist:
+
+
+            cart = Cart.objects.create(user_id = request.user.id,items="")
+            product = get_object_or_404(Inventory, item_id=int(item_id))
+            # product.stock_count -= 1
+            # product.save()
+            if product.stock_count >0:
+
+                # product.stock_count -= 1
+                # product.save()
+                # print("GOTVEREN")
+                # print(cart.items)
+
+
+                iden = str(item_id)
+                if cart.items =="":
+                    dict = {}
+                    dict[iden] = 0
+                else:
+                    dict = json.loads(cart.items)
+                    dict[iden] = 0
+
+                dict[iden] += 1
+
+
+                # dict[iden]= new_val
+
+                cart.items =json.dumps(dict)
+                cart.save()
+                return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+            else:
+                return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+                # return redirect(request.META['HTTP_REFERER'])
 
