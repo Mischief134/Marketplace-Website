@@ -30,21 +30,24 @@ def detail(request, item_id):
     })
 
 
-def restock(request):
+def restock(request, item_id):
     if request.method == 'POST':
-        # get values from request body
-        try:
-            item_id = request.body['itemId']
-            amount = request.body['amount']
-        except ValueError:
-            raise HttpResponseBadRequest
-
+        # check if product exist
         try:
             product = Product.objects.get(pk=item_id)
         except Product.DoesNotExist:
             raise HttpResponseNotFound
 
+        # get values from request body
+        try:
+            body = json.loads(request.body)
+            amount = body['amount']
+        except ValueError:
+            raise HttpResponseBadRequest
+
         # check if the user is authorized to restock
+        print(product.user)
+        print(request.user)
         if product.user != request.user:
             raise HttpResponseForbidden
 

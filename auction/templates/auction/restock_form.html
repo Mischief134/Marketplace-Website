@@ -68,7 +68,13 @@
             },
             submitRestockForm() {
                 if (this.restockQuantityState) {
-                    axios.post
+                    axios.post(`/auction/${this.itemId}/restock/`, {
+                        amount: Number(this.form.quantity),
+                    }, {
+                        headers: { 'X-CSRFToken': this.$refs.form.elements['csrfmiddlewaretoken'].value }
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 }
                 this.$emit('close');
             },
