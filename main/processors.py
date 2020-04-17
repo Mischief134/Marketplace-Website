@@ -19,3 +19,4 @@ def shopping_cart(request):
         return {
             'cart': json.loads(cart.items) if cart.items else []
         }
+    return {}
