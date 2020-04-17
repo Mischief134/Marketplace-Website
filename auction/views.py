@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 # Create your views here.
 from django.urls import reverse
+from django.db import transaction
 from auction.forms import CreateForm
 from auction.models import Product, Inventory, Cart, Order
 from user_app.models import User
@@ -83,84 +84,75 @@ def create(request):
             return response
 
 
-def add_prod_to_order(request, item_id):
-    try:
-        orders = Order.objects.get(user_id=request.user.id)
-        product = get_object_or_404(Inventory, item_id=int(item_id))
-        product.stock_count -= 1
-        product.save()
+def place_order(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        try:
+            shipping_address = body['shippingAddress']
+        except ValueError:
+            raise HttpResponseBadRequest
 
-        if orders.items == "":
-            items = {}
-            new_val = 1
-        else:
-            items = json.loads(orders.items)
-            new_val = items[str(item_id)] + 1
+        cart = get_object_or_404(Cart, user=request.user)
+        # Make sure we don't place an order with an empty cart
+        if cart.items == "":
+            raise HttpResponseBadRequest
 
-        items[str(item_id)] = new_val
+        cart_items = json.load(cart.items)
+        # same exception handling as above
+        if len(cart_items) < 1:
+            raise HttpResponseBadRequest
 
-        orders.items = json.dumps(items)
-        orders.save()
-        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+        out_of_stock_items = []
+        with transaction.atomic():
+            for (item_id, amount) in enumerate(cart_items.items()):
+                product_ivt = get_object_or_404(Inventory, item=int(item_id))
+                if product_ivt.stock_count - int(amount) < 0:
+                    out_of_stock_items.append(item_id)
+                    continue
+                else:
+                    product_ivt.stock_count -= int(amount)
+                    product_ivt.save()
 
-    except Cart.DoesNotExist:
-        orders = Order.objects.create(user_id=request.user.id, items="", shipping_address="")
-        product = get_object_or_404(Inventory, item_id=int(item_id))
-        product.stock_count -= 1
-        product.save()
+            # Prevent transaction from committing if there's not enough stock
+            if len(out_of_stock_items) > 0:
+                transaction.rollback()
+                return JsonResponse({
+                    'outOfStock': out_of_stock_items
+                }, status=400)
 
-        if orders.items == "":
-            items = {}
-            new_val = 1
-        else:
-            items = json.loads(orders.items)
-            new_val = items[str(item_id)] + 1
+        # Save new order
+        order = Order()
+        order.user = request.user
+        order.items = cart.items
+        order.shipping_address = shipping_address
+        order.save()
 
-        items[str(item_id)] = new_val
-
-        orders.items = json.dumps(items)
-        orders.save()
-        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+        return HttpResponse('Order placed.')
 
 
 def add_prod_to_cart(request, item_id):
     try:
-        cart = Cart.objects.get(user_id=request.user.id)
-        product = get_object_or_404(Inventory, item_id=int(item_id))
-        product.stock_count -= 1
-        product.save()
-        print("GOTVEREN")
-        # print(cart.items)
-
-        if cart.items == "":
-            items = {}
-            new_val = 1
-        else:
-            items = json.loads(cart.items)
-            new_val = items[str(item_id)] + 1
-
-        items[str(item_id)] = new_val
-
-        cart.items = json.dumps(items)
-        cart.save()
-        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
-
+        cart = Cart.objects.get(user=request.user)
     except Cart.DoesNotExist:
-        cart = Cart.objects.create(user_id = request.user.id,items="")
-        product = get_object_or_404(Inventory, item_id=int(item_id))
-        product.stock_count -= 1
-        product.save()
+        cart = Cart()
+        cart.user = request.user
+        cart.items = ""
 
-        if cart.items == "":
-            items = {}
-            new_val = 1
-        else:
-            items = json.loads(cart.items)
-            new_val = items[str(item_id)] + 1
+    # Make sure we don't add out of stock items
+    inventory = get_object_or_404(Inventory, item=int(item_id))
+    if inventory.stock_count < 1:
+        raise HttpResponseBadRequest
 
-        items[str(item_id)] = new_val
+    if cart.items == "":
+        items = {}
+    else:
+        items = json.loads(cart.items)
 
-        cart.items = json.dumps(items)
-        cart.save()
-        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+    if item_id in items:
+        items[item_id] += 1
+    else:
+        items[item_id] = 1
 
+    cart.items = json.dumps(items)
+    cart.save()
+    return HttpResponse(f"Added item {item_id} to cart.")
