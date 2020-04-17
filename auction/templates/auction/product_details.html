@@ -1,14 +1,3 @@
-{% extends "main/base.html" %}
-{% load static %}
-
-{% block header %}
-    <style type="text/css">
-        .product-image-container {
-            border: 1px solid #d1d1d1;
-            padding: 0;
-        }
-    </style>
-{% endblock %}
 
 {% block content %}
     <b-row align-h="center" class="mb-5">
@@ -55,6 +44,7 @@
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
     {{ pid|json_script:"pid" }}
+    {{ username|json_script:"username" }}
 {% endblock %}
 
 {% block js %}
@@ -71,7 +61,7 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (data.username + ':' + data.message + '\n');
         };
 
         chatSocket.onclose = function(e) {
@@ -88,8 +78,10 @@
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
+            const username = JSON.parse(document.getElementById('username').textContent);
             chatSocket.send(JSON.stringify({
-                'message': message
+                'message': message,
+                'username': username
             }));
             messageInputDom.value = '';
         };

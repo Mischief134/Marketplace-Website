@@ -26,7 +26,6 @@ def detail(request, item_id):
     ivt = Inventory.objects.filter(item=product).values('stock_count')
     stock_count = ivt[0].get('stock_count') if len(ivt) > 0 else None
     seller = User.objects.filter(pk=product.user.id)
-
     # except Question.DoesNotExist:
     #     raise Http404("Question does not exist")
     return render(request, 'auction/product_details.html', {
