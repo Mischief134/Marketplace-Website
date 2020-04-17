@@ -48,7 +48,8 @@ def profile(request, action=None):
         'tabIndex': tab_index,
         'orderhistory': obj,
         'inventory': list(map(lambda x: {
-            'item': x.title,
+            'id': x.id,
+            'title': x.title,
             'stock_count': x.inventory.stock_count,
             'rating': (sum(rating[x.id]) / len(rating[x.id])) if rating.get(x.id) else 'Not yet available'
         }, prods))
