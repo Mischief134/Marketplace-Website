@@ -18,8 +18,8 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     description = models.CharField(max_length=200)
-    image = models.ImageField(default='default.jpg', upload_to=product_imagepath)
-    # date = models.DateTimeField('date published')
+    image = models.ImageField(default='product_pics/default_product_pic.png', upload_to=product_imagepath)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
@@ -35,7 +35,7 @@ class ProductRating(models.Model):
 
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    items = models.TextField()  # use json.dumps to stringify the list of items
+    items = models.TextField(blank=True)  # use json.dumps to stringify the list of items
 
     def __str__(self):
         return str(self.user) + " Cart"
@@ -44,7 +44,8 @@ class Cart(models.Model):
 class Order(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     items = models.TextField()  # use json.dumps to stringify the list of items
-    time_placed = models.DateTimeField()
+    shipping_address = models.TextField()
+    time_placed = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.user) + " Orders"
@@ -52,6 +53,7 @@ class Order(models.Model):
 
 class Inventory(models.Model):
     item = models.OneToOneField(Product, on_delete=models.CASCADE)
+    stock_count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return str(self.item) + " Inventory"

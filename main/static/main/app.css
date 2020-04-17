@@ -1,4 +1,44 @@
+p {
+    white-space: pre-line;
+}
+
 .account-img {
     width: 100px;
     height: auto;
+}
+
+.product-card {
+    height: 25rem;
+    max-width: 20rem;
+    overflow: hidden;
+}
+.product-card .card-img {
+    height: 55%;
+    object-fit: cover;
+    transition: transform .5s;
+    transform-origin: bottom center;
+}
+.product-card .card-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-bottom: 5px;
+}
+.product-card .card-subtitle {
+    color: #30bf48 !important;
+}
+.product-card .card-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.product-card:hover .card-img {
+    transform: scale(1.1);
+}
+
+.product-card.latest {
+    height: 28rem;
+}
+.product-card.latest .card-img {
+    height: 50%;
 }
