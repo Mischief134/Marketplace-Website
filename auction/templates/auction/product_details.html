@@ -2,12 +2,7 @@
 {% load static %}
 
 {% block header %}
-    <style type="text/css">
-        .product-image-container {
-            border: 1px solid #d1d1d1;
-            padding: 0;
-        }
-    </style>
+    <link type="text/css" rel="stylesheet" href="{% static 'auction/styles.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -35,26 +30,66 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-row align-h="center" class="mb-2">
-                        <b-button href="{% url 'auction:add_prod_to_cart' product.id  %}"
-                            {% if stock_count > 1 %} variant="primary" {% endif %}
-                            {% if stock_count < 1 %} disabled {% endif %}
-                        >
-                            <span class="mdi mdi-cart mr-2"></span> Add to Cart
-                        </b-button>
-                    </b-row>
+                    {% if seller == user %}
+                        <b-row align-h="center" class="mb-2">
+                            <b-button @click="openRestockForm({{ product.id }})" variant="primary">
+                                Restock
+                            </b-button>
+                            <restock-form ref="restockForm" item-name="{{ product.title }}"></restock-form>
+                        </b-row>
+                    {% else %}
+                        <b-row align-h="center" class="mb-2">
+                            <b-button href="{% url 'auction:add_prod_to_cart' product.id  %}"
+                                {% if stock_count > 1 %} variant="primary" {% endif %}
+                                {% if stock_count < 1 %} disabled {% endif %}
+                            >
+                                <span class="mdi mdi-cart mr-2"></span> Add to Cart
+                            </b-button>
+                        </b-row>
+                    {% endif %}
                     <b-row align-h="center">
-                        <p class="text-muted">Stock left: {{ stock_count }}</p>
+                        {% if stock_count > 5 %}
+                            <p class="text-success">In stock</p>
+                        {% elif stock_count > 0 %}
+                            <p class="text-warning">{{ stock_count }} items left!</p>
+                        {% else %}
+                            <p class="text-danger">Out of stock</p>
+                        {% endif %}
                     </b-row>
                 </b-col>
             </b-row>
         </b-col>
     </b-row>
 
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    {{ pid|json_script:"pid" }}
+    <div id="chatroom-tab" @click="displayChat = true">
+        <span class="mdi mdi-forum mr-2"></span>Chat with seller
+    </div>
+    <div id="chatroom">
+        <b-container fluid class="mt-2">
+            <b-row align-h="between" class="mb-3">
+                <b-col cols="auto">
+                    <span class="font-weight-bold text-white">Chat with seller</span>
+                </b-col>
+                <b-col cols="auto">
+                    <span id="close-btn" class="mdi mdi-close" @click="displayChat = false"></span>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <textarea id="chat-log" rows="5"></textarea>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <input id="chat-message-input" type="text" size="10">
+                </b-col>
+                <b-col>
+                    <input id="chat-message-submit" type="button" value="Send">
+                </b-col>
+            </b-row>
+            {{ pid|json_script:"pid" }}
+        </b-container>
+    </div>
 {% endblock %}
 
 {% block js %}
@@ -94,4 +129,28 @@
             messageInputDom.value = '';
         };
     </script>
+
+    {% if seller == user %}
+        {% include "auction/restock_form.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block vue %}
+    data: {
+        displayChat: false,
+    },
+    watch: {
+        displayChat(shouldDisplay) {
+            if (shouldDisplay) {
+                document.getElementById('chatroom').classList.add('active');
+            } else {
+                document.getElementById('chatroom').classList.remove('active');
+            }
+        },
+    },
+    methods: {
+        openRestockForm(id) {
+            this.$refs.restockForm.openRestockForm(id);
+        },
+    },
 {% endblock %}

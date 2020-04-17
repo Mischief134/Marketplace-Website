@@ -57,30 +57,59 @@
                 </b-row>
                 <b-row>
                     {% if inventory %}
-                        <b-table hover :items="inventory" />
+                        <b-table hover :fields="fields" :items="inventory">
+                            <template v-slot:cell(actions)="row">
+                                <b-button variant="primary" size="sm" class="mr-1" @click="openRestockForm(row.index)">
+                                  Restock
+                                </b-button>
+                                <b-button size="sm" class="mr-1">
+                                  Edit
+                                </b-button>
+                                <b-button variant="danger" size="sm">
+                                  Delete
+                                </b-button>
+                            </template>
+                        </b-table>
                     {% else %}
                         <p class="text-muted">You don't have anything to sell yet... Add some by clicking the button below!</p>
                     {% endif %}
                 </b-row>
             </b-col>
+
+            <!-- Restock dialog -->
+            <restock-form ref="restockForm" :item-name="restockItemName" @close="restockItemName = ''"></restock-form>
         </b-tab>
     </b-tabs>
 {% endblock content %}
 
 {% block js %}
     {% include "auction/add_product.html" %}
+    {% include "auction/restock_form.html" %}
 {% endblock %}
 
 {% block vue %}
 data: {
     createModal: false,
     tabIndex: {{ tabIndex }},
-    inventory: {{inventory|safe}}
+    inventory: {{inventory|safe}},
+    fields: [
+        { key: 'title', label: 'Item', sortable: true },
+        { key: 'stock_count', label: 'Stock Count', sortable: true },
+        { key: 'rating', label: 'Rating', sortable: true },
+        { key: 'actions', label: '' }
+    ],
+    restockItemName: '',
 },
 watch: {
     tabIndex(newVal) {
         const action = newVal === 1 ? 'listings' : 'orders';
         window.history.pushState(null, null, `${window.location.origin}/user/profile/${action}`);
-    }
+    },
+},
+methods: {
+    openRestockForm(idx) {
+        this.restockItemName = this.inventory[idx].title;
+        this.$refs.restockForm.openRestockForm(this.inventory[idx].id);
+    },
 },
 {% endblock %}
