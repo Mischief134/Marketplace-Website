@@ -72,8 +72,8 @@ def edit_order(request,item_id):
         product.price= int(request.POST['price'])
         product.description= (request.POST['description'])
         product.image = request.POST['image']
-        return redirect(request.META['HTTP_REFERER'])
-        # return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+        # return redirect(request.META['HTTP_REFERER'])
+        return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
 
 def add_prod_to_order(request,item_id):
     try:
@@ -95,7 +95,7 @@ def add_prod_to_order(request,item_id):
 
             dict[iden] += 1
 
-            # dict[iden]= new_val
+
 
             orders.items = json.dumps(dict)
             orders.save()
@@ -110,8 +110,6 @@ def add_prod_to_order(request,item_id):
         orders = Order.objects.create(user_id=request.user.id, items="",shipping_address="",time_placed = timezone.now())
         product = get_object_or_404(Inventory, item_id=int(item_id))
 
-        # print("GOTVEREN")
-        # print(cart.items)
 
         if product.stock_count > 0:
             product.stock_count -= 1
@@ -165,8 +163,8 @@ def add_prod_to_cart(request, item_id):
                 cart.save()
                 return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
             else:
-                # return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
-                return redirect(request.META['HTTP_REFERER'])
+                return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+                # return redirect(request.META['HTTP_REFERER'])
 
 
         except Cart.DoesNotExist:
@@ -201,6 +199,6 @@ def add_prod_to_cart(request, item_id):
                 cart.save()
                 return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
             else:
-                # return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
-                return redirect(request.META['HTTP_REFERER'])
+                return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+                # return redirect(request.META['HTTP_REFERER'])
 
