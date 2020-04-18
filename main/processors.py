@@ -33,4 +33,6 @@ def shopping_cart(request):
         return {
             'cart': shown_list
         }
-    return {}
+    return {
+        'cart': []
+    }
