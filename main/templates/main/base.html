@@ -19,7 +19,7 @@
     <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <title>{% block title %}MyMarketplace{% endblock %}</title>
+    <title>{% block title %}Marketplace{% endblock %}</title>
     {% block header %}
     {% endblock %}
 </head>
@@ -54,26 +54,41 @@
 
         <!-- Cart modal -->
         {% if user.is_authenticated %}
-        <b-modal id="cart-modal" scrollable>
+        <b-modal id="cart-modal" size="lg" scrollable>
             <template v-slot:modal-title>
                 <span class="mdi mdi-cart mr-2"></span>Cart
             </template>
-            {% if cart %}
-                {% for entry in cart %}
-                    <p class="my-4">Cart item</p>
-                {% endfor %}
-            {% else %}
-                <p class="my-4">Your cart is empty.</p>
-            {% endif %}
+            <b-container fluid>
+                <b-col v-if="cart.length > 0">
+                    <b-row v-for="(entry, i) in cart" :key="i" align-v="center" align-h="between">
+                        <b-col cols="auto" class="text-truncate">
+                            <strong>[[ entry.title ]]</strong>
+                        </b-col>
+                        <b-col cols="auto">
+                            <b-row align-v="center">
+                                <b-col>
+                                    x [[ entry.amount ]]
+                                </b-col>
+                                <b-col>
+                                    <b-button variant="danger" pill @click="removeCartItem(i)">
+                                        <span class="mdi mdi-delete"></span>
+                                    </b-button>
+                                </b-col>
+                            </b-row>
+                        </b-col>
+                    </b-row>
+                </b-col>
+                <b-col v-else>
+                    <p class="my-4">Your cart is empty.</p>
+                </b-col>
+            </b-container>
             <template v-slot:modal-footer="{ cancel }">
                 <b-button @click="cancel">
                     Close
                 </b-button>
-                {% if cart %}
-                    <b-button variant="success" @click="cancel">
-                        Place order
-                    </b-button>
-                {% endif %}
+                <b-button v-if="cart.length > 0" variant="success" @click="cancel">
+                    Place order
+                </b-button>
             </template>
         </b-modal>
         {% endif %}
@@ -82,15 +97,42 @@
 
 {% block js %}
 {% endblock %}
+
+{% csrf_token %}
 <script type="text/javascript">
     Vue.config.devtools = true;
-    var app = new Vue({
-        delimiters: ['[[', ']]'],
-        el: '#app',
+
+    var pageMixin = {
         {% block vue %}
         data: {
         },
         {% endblock %}
+    };
+
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        mixins: [pageMixin],
+        data() {
+            return {
+                cart: {{cart|safe}}
+            };
+        },
+        methods: {
+            removeCartItem(index) {
+                const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+                axios.post('/auction/remove-from-cart/', {
+                    itemId: this.cart[index].id,
+                }, {
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                }).then(() => {
+                    this.cart.splice(index, 1);
+                    window.location.reload();
+                });
+            },
+        },
     });
 </script>
 </html>

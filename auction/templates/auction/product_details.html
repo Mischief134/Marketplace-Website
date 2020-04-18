@@ -39,21 +39,37 @@
                         </b-row>
                     {% else %}
                         <b-row align-h="center" class="mb-2">
-                            <b-button href="{% url 'auction:add_prod_to_cart' product.id  %}"
-                                {% if stock_count > 1 %} variant="primary" {% endif %}
-                                {% if stock_count < 1 %} disabled {% endif %}
-                            >
-                                <span class="mdi mdi-cart mr-2"></span> Add to Cart
-                            </b-button>
+                            <b-form method="post" action="{% url 'auction:add_prod_to_cart' product.id %}">
+                                {% csrf_token %}
+                                {% if stock_count > 0 %}
+                                    <b-form-spinbutton
+                                            name="amount" class="mb-3"
+                                            min="1" max="{{ stock_left }}"
+                                            value="1"
+                                            {% if stock_left <= 0 %} disabled {% endif %}
+                                    ></b-form-spinbutton>
+                                {% endif %}
+                                <b-button
+                                    {% if stock_count > 1 %} variant="primary" {% endif %}
+                                    {% if stock_count < 1 or stock_left <= 0 %} disabled {% endif %}
+                                    type="submit"
+                                >
+                                    <span class="mdi mdi-cart mr-2"></span> Add to Cart
+                                </b-button>
+                            </b-form>
                         </b-row>
                     {% endif %}
                     <b-row align-h="center">
                         {% if stock_count > 5 %}
-                            <p class="text-success">In stock</p>
+                            <span class="text-success">In stock</span>
                         {% elif stock_count > 0 %}
-                            <p class="text-warning">{{ stock_count }} items left!</p>
+                            <span class="text-warning">{{ stock_count }} items left!</span>
                         {% else %}
-                            <p class="text-danger">Out of stock</p>
+                            <span class="text-danger">Out of stock</span>
+                        {% endif %}
+
+                        {% if in_cart > 0 %}
+                            <span class="text-muted ml-2">({{ in_cart }} in cart)</span>
                         {% endif %}
                     </b-row>
                 </b-col>

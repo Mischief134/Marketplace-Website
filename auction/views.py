@@ -22,9 +22,19 @@ def detail(request, item_id):
     stock_count = ivt.stock_count
     seller = User.objects.get(pk=product.user.id)
 
+    # Deduct stock count if the item is in cart
+    try:
+        cart = Cart.objects.get(user=request.user)
+        cart_items = json.loads(cart.items)
+        in_cart_item_count = int(cart_items[str(item_id)]) if str(item_id) in cart_items else 0
+    except Cart.DoesNotExist:
+        in_cart_item_count = 0
+
     return render(request, 'auction/product_details.html', {
         'product': product,
         'stock_count': stock_count,
+        'in_cart': in_cart_item_count,
+        'stock_left': stock_count - in_cart_item_count,
         'seller': seller,
         'pid': product.id,
         'username': request.user.username,
@@ -47,8 +57,6 @@ def restock(request, item_id):
             raise HttpResponseBadRequest
 
         # check if the user is authorized to restock
-        print(product.user)
-        print(request.user)
         if product.user != request.user:
             raise HttpResponseForbidden
 
@@ -104,7 +112,7 @@ def place_order(request):
 
         out_of_stock_items = []
         with transaction.atomic():
-            for (item_id, amount) in enumerate(cart_items.items()):
+            for item_id, amount in cart_items.items():
                 product_ivt = get_object_or_404(Inventory, item=int(item_id))
                 if product_ivt.stock_count - int(amount) < 0:
                     out_of_stock_items.append(item_id)
@@ -131,28 +139,50 @@ def place_order(request):
 
 
 def add_prod_to_cart(request, item_id):
-    try:
-        cart = Cart.objects.get(user=request.user)
-    except Cart.DoesNotExist:
-        cart = Cart()
-        cart.user = request.user
-        cart.items = ""
+    if request.method == 'POST':
+        try:
+            cart = Cart.objects.get(user=request.user)
+        except Cart.DoesNotExist:
+            cart = Cart()
+            cart.user = request.user
+            cart.items = ""
 
-    # Make sure we don't add out of stock items
-    inventory = get_object_or_404(Inventory, item=int(item_id))
-    if inventory.stock_count < 1:
-        raise HttpResponseBadRequest
+        # Make sure we don't add out of stock items
+        inventory = get_object_or_404(Inventory, item=int(item_id))
+        if inventory.stock_count < 1:
+            raise HttpResponseBadRequest
 
-    if cart.items == "":
-        items = {}
-    else:
-        items = json.loads(cart.items)
+        if cart.items == "":
+            items = {}
+        else:
+            items = json.loads(cart.items)
 
-    if item_id in items:
-        items[item_id] += 1
-    else:
-        items[item_id] = 1
+        amount = int(request.POST.get('amount', 1))
+        if str(item_id) in items:
+            amount += int(items[str(item_id)])
 
-    cart.items = json.dumps(items)
-    cart.save()
-    return HttpResponse(f"Added item {item_id} to cart.")
+        items[str(item_id)] = amount
+
+        cart.items = json.dumps(items)
+        cart.save()
+
+    return HttpResponseRedirect(f"/auction/{item_id}")
+
+
+def remove_prod_from_cart(request):
+    if request.method == 'POST':
+        cart = get_object_or_404(Cart, user=request.user)
+
+        try:
+            body = json.loads(request.body)
+            item_id = body['itemId']
+        except ValueError:
+            raise HttpResponseBadRequest
+
+        cart_items = json.loads(cart.items)
+        # Remove item entirely from cart
+        cart_items.pop(str(item_id))
+        cart.items = json.dumps(cart_items)
+        cart.save()
+
+        return HttpResponse(f"Item {item_id} removed from cart.")
