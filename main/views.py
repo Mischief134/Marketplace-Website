@@ -2,10 +2,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
+from django.urls import reverse_lazy
+
 from auction.forms import PlaceOrderForm
 from auction.models import Product, Order, Cart, Inventory
 import json
-
+from django.views.generic.base import TemplateView
+from django.conf import settings
 
 def _transform_product_list(products: list):
     return list(map(lambda x: {
@@ -146,9 +149,20 @@ def place_order(request):
                 profile.shipping_address = form.cleaned_data['shipping_address']
                 profile.save()
 
-            return HttpResponseRedirect('/order-success/')
+            #return HttpResponseRedirect('/order-success/')
+            return HttpResponseRedirect('/payment/')
 
     return HttpResponseRedirect('/checkout/')
+
+
+
+class PaymentView(TemplateView):
+    template_name = 'main/payment.html'
+
+    def get_context_data(self, **kwargs): # new
+        context = super().get_context_data(**kwargs)
+        context['key'] = settings.STRIPE_PUBLISHABLE_KEY
+        return context
 
 
 def order_success(request):
