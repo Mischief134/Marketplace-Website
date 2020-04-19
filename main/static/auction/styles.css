@@ -47,3 +47,20 @@
     color: white;
     cursor: pointer;
 }
+#chatroom #chat-log__container {
+    height: 17rem;
+}
+#chatroom #chat-log__container > #chat-log {
+    display: flex;
+    flex-direction: column-reverse;
+    background-color: white;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+#chatroom #chat-log__container > #chat-log > span {
+    text-align: right;
+}
+#chatroom #chat-log__container > #chat-log > span.self-msg {
+    text-align: left;
+}
