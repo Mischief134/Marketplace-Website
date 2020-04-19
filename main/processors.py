@@ -10,6 +10,7 @@ def shopping_cart(request):
     """
     Returns cart data if the user is authenticated
     """
+    cart_item_count = 0
     if request.user.is_authenticated:
         try:
             cart = Cart.objects.get(user=request.user)
@@ -17,22 +18,13 @@ def shopping_cart(request):
             cart = Cart()
             cart.user = request.user
         cart_items = json.loads(cart.items) if cart.items else {}
-        shown_list = []
         for item_id, amount in cart_items.items():
             try:
-                product = Product.objects.get(pk=int(item_id))
-                if int(amount) > 0:
-                    shown_list.append({
-                        'id': product.id,
-                        'title': product.title,
-                        'amount': amount
-                    })
+                Product.objects.get(pk=int(item_id))
+                cart_item_count += amount
             except Product.DoesNotExist:
                 continue
 
-        return {
-            'cart': shown_list
-        }
     return {
-        'cart': []
+        'cart_item_count': cart_item_count
     }

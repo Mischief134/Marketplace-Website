@@ -1,0 +1,109 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+    <b-row class="mb-4">
+        <b-col>
+            <h1>Your shopping cart</h1>
+        </b-col>
+    </b-row>
+    <template v-if="cart.length > 0">
+        <b-row class="mb-4">
+            <b-col>
+                <b-table-simple>
+                    <b-thead>
+                        <b-tr>
+                            <b-th>Item name</b-th>
+                            <b-th>Quantity</b-th>
+                            <b-th>Subtotal</b-th>
+                            <b-th></b-th>
+                        </b-tr>
+                    </b-thead>
+                    <b-tbody>
+                        <b-tr v-for="(entry, i) in cart" :key="i" :variant="rowVariant(entry)">
+                            <b-td cols="auto" class="text-truncate font-weight-bold">
+                                <span
+                                        v-if="itemHasStockError(entry)"
+                                        v-b-tooltip.hover :title="stockErrorTooltip(entry)"
+                                        class="mdi mdi-alert mr-2"
+                                ></span>
+                                [[ entry.title ]]
+                            </b-td>
+                            <b-td>
+                                [[ entry.amount ]]
+                            </b-td>
+                            <b-td>
+                                $ [[ entry.subtotal ]]
+                            </b-td>
+                            <b-td>
+                                <b-button variant="danger" pill @click="removeCartItem(entry.id)">
+                                    <span class="mdi mdi-delete"></span> Delete
+                                </b-button>
+                            </b-td>
+                        </b-tr>
+                    </b-tbody>
+                    <b-tfoot>
+                        <b-tr variant="secondary">
+                            <b-td></b-td>
+                            <b-td class="font-weight-bold">{{ total_amount }}</b-td>
+                            <b-td class="font-weight-bold" style="color:#30bf48">
+                                $ {{ total_price }}
+                            </b-td>
+                            <b-th class="text-muted">Total</b-th>
+                        </b-tr>
+                    </b-tfoot>
+                </b-table-simple>
+            </b-col>
+        </b-row>
+        <b-row align-h="end">
+            <b-col cols="auto">
+                <b-button variant="success" href="/checkout/" :disabled="cartHasStockError">
+                    Proceed to checkout
+                </b-button>
+            </b-col>
+        </b-row>
+    </template>
+    <b-row v-else>
+        <b-col>
+            <p class="my-4">Your cart is empty.</p>
+        </b-col>
+    </b-row>
+    {% csrf_token %}
+{% endblock %}
+
+{% block vue %}
+    data() {
+        return {
+            cart: {{cart|safe}}
+        };
+    },
+    computed: {
+        cartHasStockError() {
+            return this.cart.some(item => this.itemHasStockError(item))
+        },
+    },
+    methods: {
+        removeCartItem(id) {
+            const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+            axios.post('/auction/remove-from-cart/', {
+                itemId: id,
+            }, {
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+            }).then(() => {
+                window.location.reload();
+            });
+        },
+        itemHasStockError(item) {
+            return Number(item.stock_left) < Number(item.amount);
+        },
+        rowVariant(item) {
+            if (this.itemHasStockError(item)) return 'warning';
+            return null;
+        },
+        stockErrorTooltip(item) {
+            if (item.stock_left < 1) return 'No stock left!'
+            return `Only ${item.stock_left} items remaining!`;
+        },
+    },
+{% endblock %}

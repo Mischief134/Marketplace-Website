@@ -42,13 +42,15 @@ class Cart(models.Model):
 
 
 class Order(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.TextField()  # use json.dumps to stringify the list of items
+    total_amount = models.IntegerField(validators=[MinValueValidator(1)])
+    total_price = models.FloatField(validators=[MinValueValidator(0.0)])
     shipping_address = models.TextField()
     time_placed = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.user) + " Orders"
+        return f"{self.user}'s order at {self.time_placed}"
 
 
 class Inventory(models.Model):
