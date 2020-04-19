@@ -59,8 +59,3 @@ class Inventory(models.Model):
 
     def __str__(self):
         return str(self.item) + " Inventory"
-
-    def in_stock(self):
-        if self.stock_count <= 0:
-            return False
-        return True
