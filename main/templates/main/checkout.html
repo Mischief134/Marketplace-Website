@@ -1,0 +1,65 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+    <b-row>
+        <b-col>
+            <h1>Checkout</h1>
+        </b-col>
+    </b-row>
+        <b-form method="POST" action="/place-order/">
+            {% csrf_token %}
+            <b-form-group
+                label="Shipping address:"
+                label-for="shipping-address"
+            >
+                <b-form-textarea
+                    id="shipping-address"
+                    name="shipping_address"
+                    v-model="form.address"
+                    :state="addressState"
+                    required
+                    rows="5"
+                    no-resize
+                    placeholder="Ex. 845 Sherbrooke St W, Montreal, Quebec H3A 0G4, Canada"
+                ></b-form-textarea>
+                <b-form-invalid-feedback :state="addressState">
+                    Please fill in your address.
+                </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-checkbox
+              id="remember-checkbox"
+              name="remember_address"
+              v-model="form.rememberAddr"
+            >
+              Remember shipping address
+            </b-form-checkbox>
+
+            <b-row align-h="end">
+                <b-col cols="auto">
+                    <b-button variant="success" :disabled="!addressState" type="submit">
+                        Place order
+                    </b-button>
+                </b-col>
+            </b-row>
+        </b-form>
+    <b-row>
+
+    </b-row>
+{% endblock %}
+
+{% block vue %}
+    data() {
+        return {
+            form: {
+                address: '{{shipping_address}}',
+                rememberAddr: true,
+            },
+        };
+    },
+    computed: {
+        addressState() {
+            if (this.form.address) return true;
+            return false;
+        },
+    },
+{% endblock %}

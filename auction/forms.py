@@ -1,6 +1,6 @@
 from django import forms
-
-from auction.models import Product, Cart
+from django.db import models
+from auction.models import Product, Order
 
 
 class CreateForm(forms.ModelForm):
@@ -9,7 +9,7 @@ class CreateForm(forms.ModelForm):
         fields = ['title', 'price', 'description', 'image']
 
 
-class CreateCart(forms.ModelForm):
+class PlaceOrderForm(forms.ModelForm):
     class Meta:
-        model = Cart
-        fields = ['user', 'items']
+        model = Order
+        fields = ['shipping_address']

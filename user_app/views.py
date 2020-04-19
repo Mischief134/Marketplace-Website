@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from user_app.models import Profile
 from auction.models import Order, Product, ProductRating
 from .forms import UserRegisterForm
+import json
 
 
 def register(request):
@@ -22,6 +24,13 @@ def register(request):
 
 @login_required
 def profile(request, action=None):
+    try:
+        Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        profile_obj = Profile()
+        profile_obj.user = request.user
+        profile_obj.save()
+
     if action is None:
         return HttpResponseRedirect('/user/profile/orders/')
     elif action == 'orders':
@@ -31,7 +40,7 @@ def profile(request, action=None):
     else:
         raise Http404('Page does not exist')
 
-    obj = Order.objects.get_queryset().filter(user=request.user)
+    order_history = Order.objects.get_queryset().filter(user=request.user)
     prods = Product.objects.select_related('inventory').filter(user=request.user)
 
     # Fetch item ratings
@@ -46,7 +55,14 @@ def profile(request, action=None):
 
     return render(request, 'users/profile.html', {
         'tabIndex': tab_index,
-        'orderhistory': obj,
+        'order_history': list(map(lambda x: {
+            'id': x.id,
+            'items': json.loads(x.items),
+            'shippingAddress': x.shipping_address,
+            'timePlaced': x.time_placed.strftime("%b %d %Y, %I:%M%p"),
+            'totalAmount': x.total_amount,
+            'totalPrice': "{:.2f}".format(x.total_price),
+        }, order_history)),
         'inventory': list(map(lambda x: {
             'id': x.id,
             'title': x.title,

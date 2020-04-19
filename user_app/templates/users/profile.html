@@ -34,13 +34,72 @@
             <template v-slot:title>
                 <h5><span class="mdi mdi-clipboard-list mr-2"></span>Order History</h5>
             </template>
-            {% if orderhistory%}
-                {% for order in orderhistory %}
-                    <p>{{order.title}}</p>
-                {% endfor %}
-            {% else %}
-                <p class="text-muted">You don't have any order history yet.</p>
-            {% endif %}
+            <template v-if="orderHistory.length > 0">
+                <b-table-simple hover>
+                    <b-thead>
+                        <b-tr>
+                            <b-th>Order Id.</b-th>
+                            <b-th>Name</b-th>
+                            <b-th></b-th>
+                        </b-tr>
+                    </b-thead>
+                    <b-tbody>
+                        <b-tr v-for="(order, i) in orderHistory" :key="i">
+                            <b-td>#[[ order.id ]]</b-td>
+                            <b-td>Order placed at [[ order.timePlaced ]]</b-td>
+                            <b-td>
+                                <b-button size="sm" @click="viewOrderDetail(i)">
+                                    View Details
+                                </b-button>
+                            </b-td>
+                        </b-tr>
+                    </b-tbody>
+                </b-table-simple>
+
+                <b-modal id="order-detail-modal" v-model="orderDetail.show" title="Order Detail" size="xl">
+                    <b-table-simple responsive v-if="orderDetail.show">
+                        <b-thead>
+                            <b-tr>
+                                <b-th>Product Id.</b-th>
+                                <b-th>Name</b-th>
+                                <b-th>Quantity</b-th>
+                                <b-th>Subtotal</b-th>
+                            </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                            <b-tr v-for="(item, i) in orderDetailItems" :key="i">
+                                <b-td>#[[ item.id ]]</b-td>
+                                <b-td class="text-truncate font-weight-bold" style="max-width:400px">
+                                    [[ item.title ]]
+                                </b-td>
+                                <b-td>[[ item.amount ]]</b-td>
+                                <b-td>$ [[ item.subtotal ]]</b-td>
+                            </b-tr>
+                        </b-tbody>
+                        <b-tfoot>
+                            <b-tr variant="secondary">
+                                <b-th class="text-muted">Total</b-th>
+                                <b-td></b-td>
+                                <b-td class="font-weight-bold">[[ orderDetailTotal.totalAmt ]]</b-td>
+                                <b-td class="font-weight-bold" style="color:#30bf48">
+                                    $ [[ orderDetailTotal.totalPrice ]]
+                                </b-td>
+                            </b-tr>
+                            <b-tr>
+                                <b-td colspan="4">
+                                    Shipped to: [[ orderDetailShippingAddr ]]
+                                </b-td>
+                            </b-tr>
+                        </b-tfoot>
+                    </b-table-simple>
+                    <template v-slot:modal-footer="{ cancel }">
+                        <b-button @click="cancel">
+                            Close
+                        </b-button>
+                    </template>
+                </b-modal>
+            </template>
+            <p v-else class="text-muted">You don't have any order history yet.</p>
         </b-tab>
         <b-tab>
             <template v-slot:title>
@@ -51,7 +110,7 @@
                     <b-col>
                         <b-row>
                             <b-button @click="createModal = true">Add new listing</b-button>
-                            <add-product v-model="createModal" />
+                            <add-product v-model="createModal"></add-product>
                         </b-row>
                     </b-col>
                 </b-row>
@@ -92,6 +151,7 @@ data: {
     createModal: false,
     tabIndex: {{ tabIndex }},
     inventory: {{inventory|safe}},
+    orderHistory: {{order_history|safe}},
     fields: [
         { key: 'title', label: 'Item', sortable: true },
         { key: 'stock_count', label: 'Stock Count', sortable: true },
@@ -99,17 +159,62 @@ data: {
         { key: 'actions', label: '' }
     ],
     restockItemName: '',
+    orderDetail: {
+        show: false,
+        viewingIndex: -1,
+    },
 },
 watch: {
     tabIndex(newVal) {
         const action = newVal === 1 ? 'listings' : 'orders';
         window.history.pushState(null, null, `${window.location.origin}/user/profile/${action}`);
     },
+    'orderDetail.show': {
+        handler(toShow) {
+            if (!toShow) {
+                this.orderDetail.viewingIndex = -1;
+            }
+        },
+    },
+},
+computed: {
+    isViewingOrderDetail() {
+        return this.orderDetail.viewingIndex >= 0;
+    },
+    orderDetailItems() {
+        if (this.isViewingOrderDetail) {
+            return this.orderHistory[this.orderDetail.viewingIndex].items;
+        }
+        return [];
+    },
+    orderDetailTotal() {
+        let totalAmt = 0;
+        let totalPrice = '0.00';
+        if (this.isViewingOrderDetail) {
+            const details = this.orderHistory[this.orderDetail.viewingIndex];
+            totalAmt = details.totalAmount;
+            totalPrice = details.totalPrice;
+        }
+        return { totalAmt, totalPrice };
+    },
+    orderDetailShippingAddr() {
+        if (this.isViewingOrderDetail) {
+            return this.orderHistory[this.orderDetail.viewingIndex].shippingAddress;
+        }
+        return '';
+    },
 },
 methods: {
     openRestockForm(idx) {
         this.restockItemName = this.inventory[idx].title;
         this.$refs.restockForm.openRestockForm(this.inventory[idx].id);
+    },
+    viewOrderDetail(idx) {
+        this.orderDetail.viewingIndex = idx;
+        this.orderDetail.show = true;
+    },
+    closeOrderDetail() {
+        this.orderDetail.show = false;
     },
 },
 {% endblock %}

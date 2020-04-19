@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+    <b-row class="my-5" align-h="center">
+        <b-col cols="auto">
+            <h3>Your order has been placed.</h3>
+        </b-col>
+    </b-row>
+    <b-row align-h="center">
+        <b-col cols="auto">
+            <b-button href="/">Back to Homepage</b-button>
+        </b-col>
+        <b-col cols="auto">
+            <b-button href="/user/profile/orders">View Order History</b-button>
+        </b-col>
+    </b-row>
+{% endblock %}

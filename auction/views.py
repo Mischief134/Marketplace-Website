@@ -1,9 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 # Create your views here.
-from django.urls import reverse
 from django.db import transaction
 from auction.forms import CreateForm
-from auction.models import Product, Inventory, Cart, Order
+from auction.models import Product, Inventory, Cart
 from user_app.models import User
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect, \
     HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
@@ -11,7 +10,6 @@ import json
 
 
 def detail(request, item_id):
-    # try:
     product = get_object_or_404(Product, pk=item_id)
     try:
         ivt = Inventory.objects.get(item=product)
@@ -90,52 +88,6 @@ def create(request):
             response = JsonResponse({'errors': form.errors})
             response.status_code = 400
             return response
-
-
-def place_order(request):
-    if request.method == 'POST':
-        body = json.loads(request.body)
-        try:
-            shipping_address = body['shippingAddress']
-        except ValueError:
-            raise HttpResponseBadRequest
-
-        cart = get_object_or_404(Cart, user=request.user)
-        # Make sure we don't place an order with an empty cart
-        if cart.items == "":
-            raise HttpResponseBadRequest
-
-        cart_items = json.load(cart.items)
-        # same exception handling as above
-        if len(cart_items) < 1:
-            raise HttpResponseBadRequest
-
-        out_of_stock_items = []
-        with transaction.atomic():
-            for item_id, amount in cart_items.items():
-                product_ivt = get_object_or_404(Inventory, item=int(item_id))
-                if product_ivt.stock_count - int(amount) < 0:
-                    out_of_stock_items.append(item_id)
-                    continue
-                else:
-                    product_ivt.stock_count -= int(amount)
-                    product_ivt.save()
-
-            # Prevent transaction from committing if there's not enough stock
-            if len(out_of_stock_items) > 0:
-                transaction.rollback()
-                return JsonResponse({
-                    'outOfStock': out_of_stock_items
-                }, status=400)
-
-        # Save new order
-        order = Order()
-        order.user = request.user
-        order.items = cart.items
-        order.shipping_address = shipping_address
-        order.save()
-
-        return HttpResponse('Order placed.')
 
 
 def add_prod_to_cart(request, item_id):
