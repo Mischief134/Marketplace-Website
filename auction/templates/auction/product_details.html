@@ -45,7 +45,7 @@
                                     <b-form-spinbutton
                                             name="amount" class="mb-3"
                                             min="1" max="{{ stock_left }}"
-                                            value="1"
+                                            :value="1"
                                             {% if stock_left <= 0 %} disabled {% endif %}
                                     ></b-form-spinbutton>
                                 {% endif %}
@@ -81,8 +81,8 @@
         <span class="mdi mdi-forum mr-2"></span>Chat with seller
     </div>
     <div id="chatroom">
-        <b-container fluid class="mt-2">
-            <b-row align-h="between" class="mb-3">
+        <b-container fluid class="h-100">
+            <b-row align-h="between" class="my-3">
                 <b-col cols="auto">
                     <span class="font-weight-bold text-white">Chat with seller</span>
                 </b-col>
@@ -91,61 +91,38 @@
                 </b-col>
             </b-row>
             <b-row>
-                <b-col>
-                    <textarea id="chat-log" rows="5"></textarea>
+                <b-col cols="12" id="chat-log__container">
+                    <div id="chat-log">
+                        <span v-for="(msg, i) in chat.log" :key="i"
+                              class="mb-2"
+                              :class="{'self-msg': msg.username === chat.username}"
+                        >
+                            <strong v-if="msg.username === chat.username" class="mr-1">You:</strong>
+                            <strong v-else class="mr-1">[[ msg.username ]]:</strong>
+                            [[ msg.message ]]
+                        </span>
+                    </div>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="my-3">
                 <b-col>
-                    <input id="chat-message-input" type="text" size="10">
-                </b-col>
-                <b-col>
-                    <input id="chat-message-submit" type="button" value="Send">
+                    <b-form autocomplete="off" @submit.prevent="sendMessage">
+                        <b-form-row>
+                            <b-col>
+                                <b-form-input v-model="chat.input" type="text" size="10"></b-form-input>
+                            </b-col>
+                            <b-col cols="auto">
+                                <b-button type="submit" variant="primary">Send</b-button>
+                            </b-col>
+                        </b-form-row>
+                    </b-form>
                 </b-col>
             </b-row>
-            {{ pid|json_script:"pid" }}
         </b-container>
     </div>
 {% endblock %}
 
 {% block js %}
-    <script>
-        const pid = JSON.parse(document.getElementById('pid').textContent);
-
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/auction/'
-            + pid
-            + '/'
-        );
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
-    </script>
-
     {% if seller == user %}
         {% include "auction/restock_form.html" %}
     {% endif %}
@@ -154,6 +131,12 @@
 {% block vue %}
     data: {
         displayChat: false,
+        chat: {
+            username: "{{user.username}}",
+            socket: null,
+            input: '',
+            log: [],
+        },
     },
     watch: {
         displayChat(shouldDisplay) {
@@ -164,9 +147,40 @@
             }
         },
     },
+    created() {
+        const pid = {{ pid }};
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/auction/'
+            + pid
+            + '/'
+        );
+        const g = this;
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            g.chat.log.unshift(data.message);
+        };
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+        this.chat.socket = chatSocket;
+    },
+    destroyed() {
+        this.chat.socket.close();
+        this.chat.socket = null;
+    },
     methods: {
         openRestockForm(id) {
             this.$refs.restockForm.openRestockForm(id);
+        },
+        sendMessage() {
+            this.chat.socket.send(JSON.stringify({
+                username: this.chat.username,
+                message: this.chat.input,
+            }));
+            this.chat.input = '';
         },
     },
 {% endblock %}
