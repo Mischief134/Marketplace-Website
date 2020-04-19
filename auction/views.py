@@ -1,5 +1,6 @@
 import datetime
-
+from django.conf import settings
+from django.views.generic.base import TemplateView
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
@@ -41,6 +42,7 @@ def restock(request,item_id, amount):
     product.stock_count += amount
     product.save()
     return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
+
 def create(request):
     if request.method == 'POST':
         form = CreateForm(request.POST, request.FILES)
@@ -162,3 +164,11 @@ def add_prod_to_cart(request, item_id):
             cart.save()
             return HttpResponseRedirect(reverse('auction:detail', args=(item_id,)))
 
+
+class PaymentView(TemplateView):
+    template_name = 'auction/payment.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['key'] = settings.STRIPE_PUBLISHABLE_KEY
+        return context

@@ -11,6 +11,6 @@ urlpatterns = [
     path('create/', views.create, name='create'),
     path('<int:item_id>/add_prod_to_cart/',views.add_prod_to_cart, name='add_prod_to_cart'),
     path('<int:item_id>/add_prod_to_order/',views.add_prod_to_order, name='add_prod_to_order'),
-    path('<int:item_id>/restock/',views.restock, name='restock')
-
+    path('<int:item_id>/restock/',views.restock, name='restock'),
+    path('payment',views.PaymentView.as_view())
 ]

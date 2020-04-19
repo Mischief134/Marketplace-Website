@@ -11,10 +11,4 @@ class InventoryModelTests(TestCase):
         inv2 = Inventory(item=product2, stock_count=0)
         self.assertIs(inv2.in_stock(), False)
 
-# class ProductModelTests(TestCase):
-#     def test_product_duplicates(self):
-#
-#
-#     def test_product_exists(self):
-#
 

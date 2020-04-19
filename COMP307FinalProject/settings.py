@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'channels',
-    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -142,9 +141,5 @@ CHANNEL_LAYERS = {
     },
 }
 
-# if DEBUG:
-#     STRIPE_PUBLISHABLE_KEY=''
-#     STRIPE_SECRET_KEY=''
-# else:
-#     STRIPE_PUBLISHABLE_KEY = 'YOUR STRIPE LIVE PUB KEY'
-#     STRIPE_SECRET_KEY = 'YOUR STRIPE LIVE SECRET KEY'
+STRIPE_SECRET_KEY = 'sk_test_RQby3lKG3FLSFtVncNZKf1y5001oEmEsO8'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_TIsalN3D6BltTPKgUDDLZgls005vfIBVk5'
