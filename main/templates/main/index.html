@@ -16,10 +16,15 @@
                 <b-card-text>
                   {{ item.description }}
                 </b-card-text>
-
+                {% if user.is_authenticated %}
                 <b-button href="{{ item.link }}" variant="primary">
                     Check it out
                 </b-button>
+                {% else %}
+                    <b-button href="{% url 'login' %}" variant="primary">
+                    Check it out
+                </b-button>
+                {% endif %}
 
                 <template v-slot:footer>
                     <small class="text-muted">Added on {{ item.created_at }}</small>

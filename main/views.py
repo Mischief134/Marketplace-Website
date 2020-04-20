@@ -134,6 +134,7 @@ def place_order(request):
             order.user = request.user
             order.items = json.dumps(order_items)
             order.total_price = total_price
+            ttl_price = total_price
             order.total_amount = total_amount
             order.shipping_address = form.cleaned_data['shipping_address']
             order.save()
@@ -162,6 +163,7 @@ class PaymentView(TemplateView):
     def get_context_data(self, **kwargs): # new
         context = super().get_context_data(**kwargs)
         context['key'] = settings.STRIPE_PUBLISHABLE_KEY
+        context['price'] = 0
         return context
 
 

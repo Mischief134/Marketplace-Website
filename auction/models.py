@@ -47,7 +47,12 @@ class Order(models.Model):
 
 class Inventory(models.Model):
     item = models.OneToOneField(Product, on_delete=models.CASCADE)
-    stock_count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    stock_count = models.IntegerField(default=1, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return str(self.item) + " Inventory"
+
+    def in_stock(self):
+        if self.stock_count <= 0:
+            return False
+        return True
