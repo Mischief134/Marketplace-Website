@@ -9,6 +9,14 @@ class CreateForm(forms.ModelForm):
         fields = ['title', 'price', 'description', 'image']
 
 
+class UpdateForm(forms.ModelForm):
+    image = forms.ImageField(required=False)
+
+    class Meta:
+        model = Product
+        fields = ['title', 'price', 'description', 'image']
+
+
 class PlaceOrderForm(forms.ModelForm):
     class Meta:
         model = Order

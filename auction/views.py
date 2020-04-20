@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 # Create your views here.
 from django.db import transaction
-from auction.forms import CreateForm
+from auction.forms import CreateForm, UpdateForm
 from auction.models import Product, Inventory, Cart
 from user_app.models import User
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect, \
@@ -88,6 +88,48 @@ def create(request):
             response = JsonResponse({'errors': form.errors})
             response.status_code = 400
             return response
+
+
+def product_info(request, item_id):
+    """
+    Used to fetch the product's data for the update operation
+    """
+    product = get_object_or_404(Product, pk=item_id)
+    if request.method == 'GET':
+        return JsonResponse({
+            'product': {
+                'title': product.title,
+                'price': product.price,
+                'description': product.description,
+            }
+        })
+    elif request.method == 'POST':
+        form = UpdateForm(request.POST, request.FILES)
+        if form.is_valid():
+            product.title = form.cleaned_data['title']
+            product.price = form.cleaned_data['price']
+            product.description = form.cleaned_data['description']
+
+            # Optionally update the product's image
+            if form.cleaned_data.get('image'):
+                product.image = form.cleaned_data['image']
+
+            product.save()
+            return HttpResponse('Item information updated.')
+        else:
+            response = JsonResponse({'errors': form.errors})
+            response.status_code = 400
+            return response
+
+
+def delete_product(request, item_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, pk=item_id)
+        # Prevent users other than the seller to remove this product
+        if product.user != request.user:
+            return HttpResponseForbidden
+        product.delete()
+        return HttpResponse('Item deleted.')
 
 
 def add_prod_to_cart(request, item_id):

@@ -110,7 +110,7 @@
                     <b-col>
                         <b-row>
                             <b-button @click="createModal = true">Add new listing</b-button>
-                            <add-product v-model="createModal"></add-product>
+                            <add-product-form v-model="createModal"></add-product-form>
                         </b-row>
                     </b-col>
                 </b-row>
@@ -121,10 +121,10 @@
                                 <b-button variant="primary" size="sm" class="mr-1" @click="openRestockForm(row.index)">
                                   Restock
                                 </b-button>
-                                <b-button size="sm" class="mr-1">
+                                <b-button size="sm" class="mr-1" @click="editProduct(row.item.id)">
                                   Edit
                                 </b-button>
-                                <b-button variant="danger" size="sm">
+                                <b-button variant="danger" size="sm" @click="deleteProduct(row.item.id)">
                                   Delete
                                 </b-button>
                             </template>
@@ -137,13 +137,20 @@
 
             <!-- Restock dialog -->
             <restock-form ref="restockForm" :item-name="restockItemName" @close="restockItemName = ''"></restock-form>
+            <!-- Edit dialog -->
+            <edit-product-form ref="editForm"></edit-product-form>
+            <!-- Delete confirmation dialog -->
+            <delete-product-form ref="deleteForm"></delete-product-form>
         </b-tab>
     </b-tabs>
 {% endblock content %}
 
 {% block js %}
-    {% include "auction/add_product.html" %}
-    {% include "auction/restock_form.html" %}
+    {% include "auction/product_info_form.js" %}
+    {% include "auction/add_product.js" %}
+    {% include "auction/edit_product.js" %}
+    {% include "auction/delete_product.js" %}
+    {% include "auction/restock_form.js" %}
 {% endblock %}
 
 {% block vue %}
@@ -208,6 +215,12 @@ methods: {
     openRestockForm(idx) {
         this.restockItemName = this.inventory[idx].title;
         this.$refs.restockForm.openRestockForm(this.inventory[idx].id);
+    },
+    editProduct(id) {
+        this.$refs.editForm.openUpdateModal(id);
+    },
+    deleteProduct(id) {
+        this.$refs.deleteForm.openDeleteModal(id);
     },
     viewOrderDetail(idx) {
         this.orderDetail.viewingIndex = idx;
