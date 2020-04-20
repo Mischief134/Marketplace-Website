@@ -89,7 +89,7 @@ def checkout(request):
     shipping_address = request.user.profile.shipping_address
     return render(request, 'main/checkout.html', {'shipping_address': shipping_address})
 
-
+ttl_price = 0
 def place_order(request):
     if request.method == 'POST':
         form = PlaceOrderForm(request.POST)
