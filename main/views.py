@@ -163,7 +163,7 @@ class PaymentView(TemplateView):
     def get_context_data(self, **kwargs): # new
         context = super().get_context_data(**kwargs)
         context['key'] = settings.STRIPE_PUBLISHABLE_KEY
-        context['price'] = ttl_price
+        context['price'] = 0
         return context
 
 
