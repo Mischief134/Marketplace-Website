@@ -25,14 +25,6 @@ class Product(models.Model):
         return self.title
 
 
-class ProductRating(models.Model):
-    item = models.ForeignKey(Product, on_delete=models.CASCADE)
-    rating = models.FloatField(
-        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]
-    )
-    comment = models.TextField()
-
-
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     items = models.TextField(blank=True)  # use json.dumps to stringify the list of items
@@ -55,7 +47,7 @@ class Order(models.Model):
 
 class Inventory(models.Model):
     item = models.OneToOneField(Product, on_delete=models.CASCADE)
-    stock_count = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    stock_count = models.IntegerField(default=1, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return str(self.item) + " Inventory"
