@@ -143,9 +143,15 @@ CHANNEL_LAYERS = {
     },
 }
 
-# if DEBUG:
-#     STRIPE_PUBLISHABLE_KEY=''
-#     STRIPE_SECRET_KEY=''
-# else:
-#     STRIPE_PUBLISHABLE_KEY = 'YOUR STRIPE LIVE PUB KEY'
-#     STRIPE_SECRET_KEY = 'YOUR STRIPE LIVE SECRET KEY'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = '307projectgroup@gmail.com'
+EMAIL_HOST_PASSWORD = 'peysarpeysarov666'
+
+
+
+
+STRIPE_SECRET_KEY = 'sk_test_RQby3lKG3FLSFtVncNZKf1y5001oEmEsO8'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_TIsalN3D6BltTPKgUDDLZgls005vfIBVk5'
