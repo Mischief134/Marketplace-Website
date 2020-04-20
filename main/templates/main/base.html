@@ -54,10 +54,9 @@
     </div>
 </body>
 
-{% block js %}
-{% endblock %}
-
 <script type="text/javascript">
+    {% block js %}
+    {% endblock %}
     Vue.config.devtools = true;
 
     var pageMixin = {
