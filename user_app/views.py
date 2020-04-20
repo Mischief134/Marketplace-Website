@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from user_app.models import Profile
-from auction.models import Order, Product, ProductRating
+from auction.models import Order, Product
 from .forms import UserRegisterForm
 import json
 
@@ -43,16 +43,6 @@ def profile(request, action=None):
     order_history = Order.objects.get_queryset().filter(user=request.user)
     prods = Product.objects.select_related('inventory').filter(user=request.user)
 
-    # Fetch item ratings
-    rating_lst = ProductRating.objects.filter(item__in=list(map(lambda x: x.id, prods)))
-    # Calculate rating average
-    rating = {}
-    for r in rating_lst:
-        if rating.get(r.id):
-            rating[r.id] += r.rating
-        else:
-            rating[r.id] = [r.rating]
-
     return render(request, 'users/profile.html', {
         'tabIndex': tab_index,
         'order_history': list(map(lambda x: {
@@ -67,6 +57,5 @@ def profile(request, action=None):
             'id': x.id,
             'title': x.title,
             'stock_count': x.inventory.stock_count,
-            'rating': (sum(rating[x.id]) / len(rating[x.id])) if rating.get(x.id) else 'Not yet available'
         }, prods))
     })
